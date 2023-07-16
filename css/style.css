@@ -1,0 +1,49 @@
+h1,
+h2,
+h3,
+p,
+li {
+  font-family: sans-serif, sans-serif;
+  line-height: 1.5em;
+}
+
+pre,
+code {
+  font-family: monospace, monospace;
+}
+
+pre {
+  margin-left: 3em;
+}
+
+#wrapper {
+  max-width: 40em;
+  margin: 0 auto;
+}
+
+a:link {
+  color: blue;
+  text-decoration: none;
+}
+
+a:visited {
+  color: blue;
+  text-decoration: none;
+}
+
+a:hover {
+  color: blue;
+  text-decoration: underline;
+}
+
+a:active {
+  color: red;
+  text-decoration: underline;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
