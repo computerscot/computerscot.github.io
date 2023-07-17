@@ -11,12 +11,12 @@
 <body>
   <div id="wrapper">
     <h1>Xray Squid</h1>
+    <p>In this configuration, the Xray server does not exit directly to the Internet, but instead passes decrypted traffic to a Squid proxy server.</p>
     <h2>Squid server</h2>
     <blockquote><code>apt update && apt upgrade -y</code></blockquote>
     <blockquote><code>apt install -y squid</code></blockquote>
     <p>Default <code>/etc/squid/squid.conf</code>:</p>
-<pre> 
-acl localnet src 0.0.0.1-0.255.255.255	# RFC 1122 "this" network (LAN)
+<pre>acl localnet src 0.0.0.1-0.255.255.255	# RFC 1122 "this" network (LAN)
 acl localnet src 10.0.0.0/8		# RFC 1918 local private network (LAN)
 acl localnet src 100.64.0.0/10		# RFC 6598 shared address space (CGN)
 acl localnet src 169.254.0.0/16 	# RFC 3927 link-local (directly plugged) machines
@@ -51,9 +51,8 @@ refresh_pattern \/(Packages|Sources)(|\.bz2|\.gz|\.xz)$ 0 0% 0 refresh-ims
 refresh_pattern \/Release(|\.gpg)$ 0 0% 0 refresh-ims
 refresh_pattern \/InRelease$ 0 0% 0 refresh-ims
 refresh_pattern \/(Translation-.*)(|\.bz2|\.gz|\.xz)$ 0 0% 0 refresh-ims
-refresh_pattern .		0	20%	4320
-</pre>
-    <p>Firewall is closed to the public on port <code>tcp/3128</code>, so that only localhost has access to that port.</p>
+refresh_pattern .		0	20%	4320</pre>
+    <p>Firewall is closed to the public on port <code>tcp/3128</code>, so only localhost has access to that port.</p>
     <h2>Xray server</h2>
     <p>Install Xray-core on your server using the latest beta, and configure it to run as root:</p>
     <blockquote><code>bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install --beta -u root</code></blockquote>
