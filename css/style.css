@@ -2,9 +2,10 @@ h1,
 h2,
 h3,
 p,
-li {
+li,
+td {
   font-family: sans-serif, sans-serif;
-  line-height: 1.5em;
+  line-height: 1.6em;
 }
 
 pre,
