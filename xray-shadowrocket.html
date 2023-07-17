@@ -80,12 +80,108 @@
     <p>Restart <code>xray</code> systemd service with your final configuration file:</p>
     <blockquote><code>systemctl restart xray</code></blockquote>
     <blockquote><code>systemctl status xray</code></blockquote>
+    
     <h2>Shadowrocket Xray client</h2>
     <p>Example of a completed client configuration:</p>
     <img src="img/001.png" alt="Shadowrocket edit server for Xray">
     <p>Route all traffic through proxy:</p>
     <img src="img/002.png" alt="Shadowrocket route all traffic through proxy">
 
+    <h2>CLI Xray client</h2>
+    <p>Example of a completed client configuration file <code>config.json</code>:</p>
+<pre>
+{
+    "log": {
+        "loglevel": "warning"
+    },
+    "routing": {
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            {
+                "type": "field",
+                "domain": [
+                    "geosite:category-ads-all"
+                ],
+                "outboundTag": "block"
+            },
+            {
+                "type": "field",
+                "domain": [
+                    "geosite:geolocation-!cn"
+                ],
+                "outboundTag": "proxy"
+            },
+            {
+                "type": "field",
+                "domain": [
+                    "geosite:cn",
+                    "geosite:private"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:cn",
+                    "geoip:private"
+                ],
+                "outboundTag": "direct"
+            }
+        ]
+    },
+    "inbounds": [
+        {
+            "listen": "127.0.0.1",
+            "port": 10808,
+            "protocol": "socks"
+        },
+        {
+            "listen": "127.0.0.1",
+            "port": 10809,
+            "protocol": "http"
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "YOUR.SERVER.IP.ADDRESS",
+                        "port": 443,
+                        "users": [
+                            {
+                                "id": "3b5390c5-52a2-472d-8dc2-103ef508be6c",
+                                "encryption": "none",
+                                "flow": ""
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "h2",
+                "security": "reality",
+                "realitySettings": {
+                    "show": false,
+                    "fingerprint": "chrome",
+                    "serverName": "www.lovelive-anime.jp",
+                    "publicKey": "eZfl07Tg9UII29GaS23QXqB15aqrJ4Khm0vKJIcaMCo",
+                    "shortId": "77c2358dc476ae9e", 
+                    "spiderX": ""
+                }
+            },
+            "tag": "proxy"
+        },
+        {
+            "protocol": "freedom",
+            "tag": "direct"
+        }
+    ]
+}
+</pre>
+    <p>Run the CLI client with the above configuration file.</p>
+    
   </div>
 </body>
 
