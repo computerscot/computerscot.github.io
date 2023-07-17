@@ -2,6 +2,7 @@ h1,
 h2,
 h3,
 p,
+blockquote,
 li,
 td {
   font-family: sans-serif, sans-serif;
@@ -15,6 +16,7 @@ code {
 
 pre {
   margin-left: 3em;
+  line-height: 1.6em;
 }
 
 #wrapper {
