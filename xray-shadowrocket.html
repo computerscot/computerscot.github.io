@@ -82,7 +82,7 @@
     <blockquote><code>systemctl status xray</code></blockquote>
 
     <h2>CLI Xray client</h2>
-    <p>Original <code>config.json</code> for a command-line interface, used to pick out the values for manual entry into the Shadowrocket GUI:</p>
+    <p>This is the original <code>config.json</code> for a command-line interface, used to pick out the values for manual entry into the Shadowrocket GUI:</p>
 <pre>{
     "log": {
         "loglevel": "warning"
@@ -174,11 +174,25 @@
 }</pre>
     
     <h2>Shadowrocket Xray client</h2>
-    <p>Example of a completed client configuration:</p>
+    <p>Here is an example of a completed client configuration:</p>
     <img src="img/001.png" alt="Shadowrocket edit server for Xray">
-    <p>Route all traffic through proxy:</p>
+    <p>To route all traffic through the proxy server:</p>
     <img src="img/002.png" alt="Shadowrocket route all traffic through proxy">
 
+    <h2>Shadowrocket GUI</h2>
+    <h3>Home</h3>
+    <p>Here you can scan a QR code or manually key in a server (Shadowsocks, ShadowsocksR, Subscription, Vmess, VLESS, GOST Relay, Socks5, Socks5 over TLS, HTTP, HTTPS, HTTP2, Trojan, Hysteria, TUIC, WireGuard, Snell, Brook, or Lua).</p>
+    <p>The main Connect toggle switch (ON/OFF) is on this page.</p>
+    <p>You can specify a Global Routing strategy (based on the configuration, always proxy, always direct, or scene).</p>
+    <p>There is also a Connectivity Test.</p>
+    <p>The remainder of this page is a list of your servers.</p>
+    <h3>Config</h3>
+    <p>Here you configure Shadowrocket (general, rules, hosts, URL rewrite, HTTPS decryption, script, and proxy group).</p>
+    <h3>Data</h3>
+    <p>Here is where you will find statistics and logs. You can also export and import configurations.</p>
+    <h3>Settings</h3>
+    <p>Here you can set things like test method, on demand rules, proxy port, and many other settings.</p>
+    
     <h2>Shadowrocket JSON format for sharing</h2>
 <pre>{
   "host" : "YOUR.SERVER.IP.ADDRESS",
