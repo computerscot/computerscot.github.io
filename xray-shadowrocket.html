@@ -82,7 +82,7 @@
     <blockquote><code>systemctl status xray</code></blockquote>
 
     <h2>CLI Xray client</h2>
-    <p>This is the original <code>config.json</code> for a command-line interface, used to pick out the values for manual entry into the Shadowrocket GUI:</p>
+    <p>This is the original <code>config.json</code> for a command-line interface. From a JSON file such as this, you can pick out the values for manual entry into the Shadowrocket GUI:</p>
 <pre>{
     "log": {
         "loglevel": "warning"
@@ -174,6 +174,7 @@
 }</pre>
 
     <h2>Shadowrocket GUI</h2>
+    <p>There are four main pages in the Shadowrocket graphical user interface.</p>
     <h3>Home</h3>
     <p>Here you can scan a QR code or manually key in a server (Shadowsocks, ShadowsocksR, Subscription, Vmess, VLESS, GOST Relay, Socks5, Socks5 over TLS, HTTP, HTTPS, HTTP2, Trojan, Hysteria, TUIC, WireGuard, Snell, Brook, or Lua).</p>
     <p>The main Connect toggle switch (ON/OFF) is on this page.</p>
@@ -190,7 +191,7 @@
     <h2>Shadowrocket Xray client</h2>
     <p>Here is an example of a completed client configuration:</p>
     <img src="img/001.png" alt="Shadowrocket edit server for Xray">
-    <p>To route all traffic through the proxy server:</p>
+    <p>To route all traffic through the proxy server, specify a Global Routing setting of Proxy.</p>
     <img src="img/002.png" alt="Shadowrocket route all traffic through proxy">
     
     <h2>Shadowrocket JSON format for sharing</h2>
