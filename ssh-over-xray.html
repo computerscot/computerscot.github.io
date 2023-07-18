@@ -197,8 +197,8 @@
 <pre>Host myssh
     Hostname SSH.SERVER.IP.ADDRESS
     User ubuntu
-    ProxyCommand          nc -X 5 -x 127.0.0.1:10808 %h %p
-    ServerAliveInterval   10</pre>
+    ProxyCommand nc -X 5 -x 127.0.0.1:10808 %h %p
+    ServerAliveInterval 10</pre>
     <p>Replace the hostname and user as necessary.</p>
     <p>Save the file with your changes in it.</p>
     <p>Then to connect use:</p>
