@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SSH over Xray</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div id="wrapper">
+    <h1>SSH over Xray</h1>
+    <p>The scenario in this post is that you want to SSH into a remote server, but your direct connection to the remote server is blocked by a firewall. Therefore you decide to pass SSH over an Xray connection. There are two server IP addresses in the examples:</p>
+    <blockquote><code>XRAY.SERVER.IP.ADDRESS</code></blockquote>
+    <blockquote><code>SSH.SERVER.IP.ADDRESS</code></blockquote>
+    <h2>Xray server</h2>
+    <p>Install Xray-core on your Xray server using the latest beta, and configure it to run as root:</p>
+    <blockquote><code>bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install --beta -u root</code></blockquote>
+    <p>Example of a completed server configuration file <code>/usr/local/etc/xray/config.json</code>:</p>
+<pre>
+{
+    "log": {
+        "loglevel": "warning"
+    },
+    "routing": {
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:cn",
+                    "geoip:private"
+                ],
+                "outboundTag": "block"
+            }
+        ]
+    },
+    "inbounds": [
+        {
+            "listen": "0.0.0.0",
+            "port": 443,
+            "protocol": "vless",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "3b5390c5-52a2-472d-8dc2-103ef508be6c",
+                        "flow": ""
+                    }
+                ],
+                "decryption": "none"
+            },
+            "streamSettings": {
+                "network": "h2",
+                "security": "reality",
+                "realitySettings": {
+                    "show": false,
+                    "dest": "www.lovelive-anime.jp:443",
+                    "xver": 0,
+                    "serverNames": [ 
+                        "www.lovelive-anime.jp"
+                    ],
+                    "privateKey": "QNraK6EdxPNOzfbL2G1BTl_OeMSxm49H5vps2qzQ3E0",
+                    "shortIds": [ 
+                        "77c2358dc476ae9e"
+                    ]
+                }
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "freedom",
+            "tag": "direct"
+        },
+        {
+            "protocol": "blackhole",
+            "tag": "block"
+        }
+    ]
+}
+</pre>
+    <p>Restart <code>xray</code> systemd service with your final configuration file:</p>
+    <blockquote><code>systemctl restart xray</code></blockquote>
+    <blockquote><code>systemctl status xray</code></blockquote>
+
+    <h2>Xray client</h2>
+    <p>Download the Xray CLI client from <a href="https://github.com/XTLS/Xray-core/releases">https://github.com/XTLS/Xray-core/releases</a>.</p>
+    <p>Create a file <code>config.json</code> in the same folder as the <code>xray</code> executable. Following is a template you can use for your client configuration <code>config.json</code>. Note that the Xray client will accept SOCKS proxy input on port <code>10808</code>.</p>
+<pre>{
+    "log": {
+        "loglevel": "warning"
+    },
+    "routing": {
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            {
+                "type": "field",
+                "domain": [
+                    "geosite:category-ads-all"
+                ],
+                "outboundTag": "block"
+            },
+            {
+                "type": "field",
+                "domain": [
+                    "geosite:geolocation-!cn"
+                ],
+                "outboundTag": "proxy"
+            },
+            {
+                "type": "field",
+                "domain": [
+                    "geosite:cn",
+                    "geosite:private"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:cn",
+                    "geoip:private"
+                ],
+                "outboundTag": "direct"
+            }
+        ]
+    },
+    "inbounds": [
+        {
+            "listen": "127.0.0.1",
+            "port": 10808,
+            "protocol": "socks"
+        },
+        {
+            "listen": "127.0.0.1",
+            "port": 10809,
+            "protocol": "http"
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "XRAY.SERVER.IP.ADDRESS",
+                        "port": 443,
+                        "users": [
+                            {
+                                "id": "3b5390c5-52a2-472d-8dc2-103ef508be6c",
+                                "encryption": "none",
+                                "flow": ""
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "h2",
+                "security": "reality",
+                "realitySettings": {
+                    "show": false,
+                    "fingerprint": "chrome",
+                    "serverName": "www.lovelive-anime.jp",
+                    "publicKey": "eZfl07Tg9UII29GaS23QXqB15aqrJ4Khm0vKJIcaMCo",
+                    "shortId": "77c2358dc476ae9e", 
+                    "spiderX": ""
+                }
+            },
+            "tag": "proxy"
+        },
+        {
+            "protocol": "freedom",
+            "tag": "direct"
+        }
+    ]
+}</pre>
+    <p>At a minimum, replace <code>XRAY.SERVER.IP.ADDRESS</code> with the actual Xray server IP address.</p>
+    <p>Save the file with your changes in it.</p>
+    <p>Set the CLI client running with the above <code>config.json</code>:</p>
+    <blockquote><code>./xray -c config.json</code></blockquote>
+    <p>Leave the terminal window open with the <code>xray</code> program running in it.</p>
+
+    <h2>SSH server</h2>
+    <p>The only special preparation you need on the SSH server is to open the firewall for SSH input on port <code>tcp/22</code> from source IP address <code>XRAY.SERVER.IP.ADDRESS</code>.</p>
+
+    <h2>SSH client</h2>
+    <p>Your workstation will be the SSH client, communicating with the SSH server, but doing so over the Xray connection between your workstation and your Xray server.</p>
+    <p>Open a second terminal window, so that the Xray client can continue to run in the first terminal window.<p>
+    <p>Edit <code>.ssh/config</code>. Insert the following lines:</p>
+<pre>Host myssh
+    Hostname SSH.SERVER.IP.ADDRESS
+    User ubuntu
+    ProxyCommand          nc -X 5 -x 127.0.0.1:10808 %h %p
+    ServerAliveInterval   10</pre>
+    <p>Replace the hostname and user as necessary.</p>
+    <p>Save the file with your changes in it.</p>
+    <p>Then to connect use:</p>
+    <blockquote><code>ssh myssh</code></blockquote>
+    
+  </div>
+</body>
+
+</html>
