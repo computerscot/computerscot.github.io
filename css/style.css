@@ -8,7 +8,9 @@ h3,
 p,
 blockquote,
 li,
-td {
+td,
+dt,
+dd {
   font-family: sans-serif, sans-serif;
   line-height: 1.6em;
 }
