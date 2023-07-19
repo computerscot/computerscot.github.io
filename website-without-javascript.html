@@ -55,9 +55,11 @@
 </pre>
     <p>Reload Nginx with this configuration:</p>
     <blockquote><code>systemctl reload nginx</code></blockquote>
-    <p>If you want your hidden site to be super-secret, you would never open port <code>tcp/80</code> in your firewall. But if you are okay with some minimal exposure, then at this stage you can open port <code>tcp/80</code>, and check how your site looks by pointing at your server's IP address.</p>
+    <p>If you want your site to be super-secret, you would never open port <code>tcp/80</code> to the public in your firewall. But if you are okay with some public exposure, then at this stage you can open port <code>tcp/80</code>, and check how your site looks by pointing at your server's IP address.</p>
     <img src="img/048.png" alt="Minimalist Hugo theme de-souza/hugo-flex renders without JavaScript">
-    <p>At this point you can take your site in different directions.</p>
+
+    <h2>Next steps</h2>
+    <p>At this point you can take your site in different directions:</p>
     <ul>
       <li>For a clearnet site, you would typically add a domain name and an SSL certificate to make it available as an HTTPS site.</li>
       <li>You could alternatively turn your site into a Tor onion hidden service by following the instructions on the Tor Project website.</li>
