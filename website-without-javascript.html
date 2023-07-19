@@ -60,15 +60,15 @@
 
     <h2>Create content</h2>
     <p>Still positioned in your <code>/var/www/quickstart</code> directory, issue the command:</p>
-    <blockquote><code>hugo new posts/2023-07-19-my-first-post.md</code></blockquote>
-    <p>Hugo creates <code>/var/www/quickstart/content/posts/2023-07-19-my-first-post.md</code>. It looks like this:</p>
+    <blockquote><code>hugo new post/2023-07-19-my-first-post.md</code></blockquote>
+    <p>Hugo creates <code>/var/www/quickstart/content/post/2023-07-19-my-first-post.md</code>. It looks like this:</p>
 <pre>---
 title: "2023 07 19 My First Post"
 date: 2023-07-19T21:28:21Z
 draft: true
 ---
 </pre>
-    <p>Edit the file <code>content/posts/2023-07-19-my-first-post.md</code> and make it look like this:</p>
+    <p>Edit the file <code>content/post/2023-07-19-my-first-post.md</code> and make it look like this:</p>
 <pre>---
 title: "My First Post"
 date: 2023-07-19T21:28:21Z
@@ -78,6 +78,14 @@ category: "post"
 ---
 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 </pre>
+    <p>Also create a file <code>content/about.md</code>:</p>
+<pre>---
+title: "About"
+date: "2023-07-19"
+---
+
+Written in Go, Hugo is an open-source static site generator.</pre>
+
     <p>Regenerate your public HTML:</p>
     <blockquote><code>hugo</code></blockquote>
 
