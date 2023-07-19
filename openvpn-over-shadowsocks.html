@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenVPN over Shadowsocks</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="OpenVPN over Shadowsocks" />
+  <meta property="og:description" content="When you want to OpenVPN into a remote server, but your packets to the remote server are detected and blocked">
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://computerscot.github.io/img/computerscot.png" />
+  <meta property="og:url" content="https://computerscot.github.io/ssh-over-xray.html" />
+</head>
+
+<body>
+  <div id="wrapper">
+    <h1>OpenVPN over Shadowsocks</h1>
+    <p>The scenario in this post is that you want to connect to an OpenVPN server at a remote location, but your OpenVPN packets are being detected and blocked by a firewall. Therefore you decide to pass your OpenVPN packets through a Shadowsocks tunnel. This is only possible on desktop platforms (Linux, macOS, or Windows), not on mobile devices.</p>
+    <p>The server IP address is given in the examples as:</p>
+    <blockquote><code>YOUR.SERVER.IP.ADDRESS</code></blockquote>
+
+    <h2>Server</h2>
+    <p>Install and configure OpenVPN using the script from <a href="https://github.com/angristan/openvpn-install">https://github.com/angristan/openvpn-install</a>.</p>
+    <p>Securely download the generated client configuration file from your server to your client.</p>
+    <p>Install Shadowsocks from the repositories:</p>
+    <blockquote><code>apt install -y shadowsocks-libev</code></blockquote>
+    <p>Edit the Shadowsocks configuration file <code>/etc/shadowsocks-libev/config.json</code>:</p>
+<pre>{
+    "server":"0.0.0.0",
+    "server_port":8388,
+    "method":"chacha20-ietf-poly1305",
+    "password":"32w7kfoylvdoerov",
+    "mode":"tcp_and_udp",
+    "fast_open":false
+}</pre>
+    <p>Restart Shadowsocks with the new configuration:</p>
+    <blockquote><code>systemctl restart shadowsocks-libev</code></blockquote>
+
+    <h2>Client</h2>
+
+    <h3>Windows</h3>
+    <p>Install the Shadowsocks GUI client for Windows from <a href="https://github.com/shadowsocks/shadowsocks-windows">https://github.com/shadowsocks/shadowsocks-windows</a>.</p>
+    <p>Configure the client to match your server.</p>
+    <p>Install the OpenVPN GUI client for Windows from <a href="https://openvpn.net/community-downloads/">https://openvpn.net/community-downloads/</a>.</p>
+    <p>Add these lines to your downloaded OpenVPN client configuration file:</p>
+    <blockquote><code>socks-proxy 127.0.0.1 1080<br>
+    route YOUR.SERVER.IP.ADDRESS 255.255.255.255 net_gateway<br>
+    block-outside-dns</code></blockquote>
+    <p>Import the amended client configuration file into the OpenVPN GUI.</p>
+    <p>Connect the OpenVPN client to the OpenVPN server.</p>
+
+    <h3>Linux</h3>
+    <p>Install Shadowsocks from the repositories:</p>
+    <blockquote><code>sudo apt install -y shadowsocks-libev</code></blockquote>
+    <p>Stop Shadowsocks server:</p>
+    <blockquote><code>sudo systemctl stop shadowsocks-libev</code></blockquote>
+    <blockquote><code>sudo systemctl disable shadowsocks-libev</code></blockquote>
+    <p>Configure the Shadowsocks client by editing <code>/etc/shadowsocks-libev/local-config.json</code>:</p>
+<pre>{
+    "server":"YOUR.SERVER.IP.ADDRESS",
+    "server_port":8388,
+    "local_address":"127.0.0.1",
+    "local_port":1080,
+    "method":"chacha20-ietf-poly1305",
+    "password":"32w7kfoylvdoerov",
+    "mode":"tcp_and_udp",
+    "fast_open":false
+}</pre>
+    <p>Start the Shadowsocks client running:</p>
+    <blockquote><code>sudo systemctl enable shadowsocks-libev-local@local-config</code></blockquote>
+    <blockquote><code>sudo systemctl start shadowsocks-libev-local@local-config</code></blockquote>
+    <p>Install OpenVPN for Network Manager from the repositories:</p>
+    <blockquote><code>sudo apt install -y network-manager-openvpn-gnome</code></blockquote>
+    <p>Add a line to the downloaded OpenVPN client configuration:</p>
+    <blockquote><code>socks-proxy 127.0.0.1 1080</code></blockquote>
+    <p>Determine default gateway:</p>
+    <blockquote><code>ip route</code></blockquote>
+    <p>Add static route to server:</p>
+    <blockquote><code>sudo ip route add YOUR.SERVER.IP.ADDRESS via &lt;default_gateway&gt; dev &lt;default_device&gt;</code></blockquote>
+    <p>Start OpenVPN from the Network Manager GUI.</p>
+
+    <h3>macOS</h3>
+    <p>These notes on the configuration for macOS clients are based on an email received by the author of <a href="https://www.tipsforchina.com/how-to-tunnel-expressvpn-over-shadowsocks-for-increased-speed-from-china.html">https://www.tipsforchina.com/how-to-tunnel-expressvpn-over-shadowsocks-for-increased-speed-from-china.html</a>.</p>
+    <p>Install ShadowsocksX-NG, the Shadowsocks client for macOS, from <a href="https://github.com/shadowsocks/ShadowsocksX-NG">https://github.com/shadowsocks/ShadowsocksX-NG</a>.</p>
+    <p>Configure the client to match your server.</p>
+    <p>Turn on <strong>Manual Mode</strong> in ShadowsocksX-NG.</p>
+    <p>Download Tunnelblick, the OpenVPN client for macOS, from <a href="https://tunnelblick.net/">https://tunnelblick.net/</a>.</p>
+    <p>Add these lines to your downloaded OpenVPN client configuration file (assuming <code>1086</code> is the port ShadowsocksX-NG listens on):</p>
+    <blockquote><code>socks-proxy 127.0.0.1 1086<br>
+    route YOUR.SERVER.IP.ADDRESS 255.255.255.255 net_gateway</code></blockquote>
+    <p>Import the amended client configuration file into Tunnelblick.</p>
+    <p>Connect the OpenVPN client to the OpenVPN server.</p>
+
+  </div>
+</body>
+
+</html>
