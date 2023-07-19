@@ -25,7 +25,7 @@
     <p>Securely download the generated client configuration file from your server to your client.</p>
     <p>Install Shadowsocks from the repositories:</p>
     <blockquote><code>apt install -y shadowsocks-libev</code></blockquote>
-    <p>Edit the Shadowsocks configuration file <code>/etc/shadowsocks-libev/config.json</code>:</p>
+    <p>Edit the Shadowsocks configuration file <code>/etc/shadowsocks-libev/config.json</code>. Of course, you can change the <code>server_port</code> and <code>password</code>, provided you make equivalent changes in your client configuration. Also, it is the Shadowsocks <code>server_port</code>, not the OpenVPN port, that must be open in your server firewall for both TCP and UDP input.</p>
 <pre>{
     "server":"0.0.0.0",
     "server_port":8388,
