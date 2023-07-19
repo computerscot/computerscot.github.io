@@ -16,7 +16,7 @@
 <body>
   <div id="wrapper">
     <h1>OpenVPN over Shadowsocks</h1>
-    <p>The scenario in this post is that you want to connect to an OpenVPN server at a remote location, but your OpenVPN packets are being detected and blocked by a firewall. Therefore you decide to pass your OpenVPN packets through a Shadowsocks tunnel. This is only possible on desktop platforms (Linux, macOS, or Windows), not on mobile devices.</p>
+    <p>The scenario in this post is that you want to connect to an OpenVPN server at a remote location, but your OpenVPN packets are being detected and blocked by a firewall. Therefore you decide to pass your OpenVPN packets through a Shadowsocks tunnel.</p>
     <p>The server IP address is given in the examples as:</p>
     <blockquote><code>YOUR.SERVER.IP.ADDRESS</code></blockquote>
 
@@ -44,9 +44,9 @@
     <p>Configure the client to match your server.</p>
     <p>Install the OpenVPN GUI client for Windows from <a href="https://openvpn.net/community-downloads/">https://openvpn.net/community-downloads/</a>.</p>
     <p>Add these lines to your downloaded OpenVPN client configuration file:</p>
-    <blockquote><code>socks-proxy 127.0.0.1 1080<br>
-    route YOUR.SERVER.IP.ADDRESS 255.255.255.255 net_gateway<br>
-    block-outside-dns</code></blockquote>
+<pre>socks-proxy 127.0.0.1 1080
+route YOUR.SERVER.IP.ADDRESS 255.255.255.255 net_gateway
+block-outside-dns</pre>
     <p>Import the amended client configuration file into the OpenVPN GUI.</p>
     <p>Connect the OpenVPN client to the OpenVPN server.</p>
 
@@ -87,8 +87,8 @@
     <p>Turn on <strong>Manual Mode</strong> in ShadowsocksX-NG.</p>
     <p>Download Tunnelblick, the OpenVPN client for macOS, from <a href="https://tunnelblick.net/">https://tunnelblick.net/</a>.</p>
     <p>Add these lines to your downloaded OpenVPN client configuration file (assuming <code>1086</code> is the port ShadowsocksX-NG listens on):</p>
-    <blockquote><code>socks-proxy 127.0.0.1 1086<br>
-    route YOUR.SERVER.IP.ADDRESS 255.255.255.255 net_gateway</code></blockquote>
+<pre>socks-proxy 127.0.0.1 1086
+route YOUR.SERVER.IP.ADDRESS 255.255.255.255 net_gateway</pre>
     <p>Import the amended client configuration file into Tunnelblick.</p>
     <p>Connect the OpenVPN client to the OpenVPN server.</p>
 
