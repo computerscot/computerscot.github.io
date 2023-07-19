@@ -58,6 +58,29 @@
     <p>If you want your site to be super-secret, you would never open port <code>tcp/80</code> to the public in your firewall. But if you are okay with some public exposure, then at this stage you can open port <code>tcp/80</code>, and check how your site looks by pointing at your server's IP address.</p>
     <img src="img/048.png" alt="Minimalist Hugo theme de-souza/hugo-flex renders without JavaScript">
 
+    <h2>Create content</h2>
+    <p>Still positioned in your <code>/var/www/quickstart</code> directory, issue the command:</p>
+    <blockquote><code>hugo new posts/2023-07-19-my-first-post.md</code></blockquote>
+    <p>Hugo creates <code>/var/www/quickstart/content/posts/2023-07-19-my-first-post.md</code>. It looks like this:</p>
+<pre>---
+title: "2023 07 19 My First Post"
+date: 2023-07-19T21:28:21Z
+draft: true
+---
+</pre>
+    <p>Edit the file and make it look like this:</p>
+<pre>---
+title: "My First Post"
+date: 2023-07-19T21:28:21Z
+draft: false
+tag: "new"
+category: "post"
+---
+	Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+</pre>
+    <p>Regenerate your public HTML:</p>
+    <blockquote><code>hugo</code></blockquote>
+
     <h2>Next steps</h2>
     <p>At this point you can take your site in different directions:</p>
     <ul>
