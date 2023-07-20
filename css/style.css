@@ -34,6 +34,8 @@ pre {
 .wrapper {
   max-width: 36em;
   margin: 0 auto;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
 }
 
 a:link {
