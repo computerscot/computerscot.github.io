@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shadowsocks over Restls</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="Shadowsocks over Restls">
+  <meta property="og:description" content="A response to TLS-in-TLS detection and blocking">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://computerscot.github.io/img/computerscot.png">
+  <meta property="og:url" content="https://computerscot.github.io/shadowsocks-over-restls.html">
+</head>
+
+<body>
+  <div id="bar">
+    <div class="wrapper">
+      <p><a href="https://computerscot.github.io">computerscot.github.io</a></p>
+    </div>
+  </div>
+  <div class="wrapper">
+    <h1>Shadowsocks over Restls</h1>
+    <p><em>July 20, 2023</em></p>
+    <p>Restls is a response to the TLS-in-TLS detection and blocking of October 2022. It imitates a TLS connection, while disrupting the packet lengths that would be characteristic of TLS-in-TLS. Restls does this by injecting spoof packets and fragmenting real packets. The rules for manipulating packets are not hardcoded, but are determined at run time by a "script."</p>
+    <p>In this tutorial, you'll set up a server and client implementing Shadowsocks over Restls. The server is a small VPS that runs Ubuntu 22.04. The client may be macOS, Windows, or Linux.</p>
+    <p>The examples in this post use these values:</p>
+    <ul>
+      <li>Server IP address: <code>YOUR.SERVER.IP.ADDRESS</code></li>
+      <li>Shadowsocks password: <code>h9n40xhka0i2cqms</code></li>
+      <li>Restls password: <code>bONgnNUylELevNbN</code></li>
+    </ul>
+    <p>For more information on Restls, visit <a href="https://github.com/3andne/restls">https://github.com/3andne/restls</a>.</p>
+
+    <h2>Install and configure Shadowsocks on server</h2>
+    <p>You do not need to open any firewall ports for Shadowsocks, since traffic will pass through Restls first.</p>
+    <p>Install Shadowsocks from the repositories:
+    <blockquote><code>apt update && apt upgrade -y</code></blockquote>
+    <blockquote><code>apt install -y shadowsocks-libev</code></blockquote>
+    <p>Edit the Shadowsocks configuration file <code>/etc/shadowsocks-libev/config.json</code>. Of course, you can change the password from the one in the example, provided you make equivalent changes in your client configuration.</p>
+<pre>{
+    "server":"127.0.0.1",
+    "server_port":8388,
+    "method":"chacha20-ietf-poly1305",
+    "password":"h9n40xhka0i2cqms",
+    "mode":"tcp_only",
+    "fast_open":false
+}</pre>
+    <p>Restart Shadowsocks with the new configuration:</p>
+    <blockquote><code>systemctl restart shadowsocks-libev</code></blockquote>
+
+    <h2>Install and configure Restls on server</h2>
+    <p>Open port <code>tcp/443</code> in your server firewall.</p>
+    <p>Download the latest Restls binary for your server architecture from <a href="https://github.com/3andne/restls/releases">https://github.com/3andne/restls/releases</a>. For example:</p>
+    <blockquote><code>wget https://github.com/3andne/restls/releases/download/v0.1.0-pre5/restls-x86_64-unknown-linux-musl</code></blockquote>
+    <p>Copy the binary into a directory that is in your execution path, and give it a shorter name:</p>
+    <blockquote><code>cp restls-x86_64-unknown-linux-musl /usr/local/bin/restls</code></blockquote>
+    <blockquote><code>chmod +x /usr/local/bin/restls</code></blockquote>
+    <p>Start a new <code>screen</code> session for Restls:</p>
+    <blockquote><code>screen -S restls</code></blockquote>
+    <p>Run Restls with the given script (this is all one long command):</p>
+    <blockquote><code>restls -s "www.microsoft.com" -l "0.0.0.0:443" -p bONgnNUylELevNbN -f "127.0.0.1:8388" --script "200?100,400?100,1200?200<1,1100~300,1000~100<1,2500~500,1300~50,1300~50,100~1200"</code></blockquote>
+    <p>Typical response:</p>
+    <blockquote><code>2023-07-20T23:38:36.267091Z  INFO Restls server started as www.microsoft.com:443 on 0.0.0.0:443, forwarding to 127.0.0.1:8388</code></blockquote>
+    <p>To detach from the <code>screen</code> session, do <strong>Ctrl</strong>+<strong>a</strong> immediately followed by <strong>d</strong>.</p>
+    <p>Restls is listening on port <code>tcp/443</code>.</p>
+    <p>Your work on the server is done for now.</p>
+
+    <h2>Install and configure Clash.Meta Restls fork on client</h2>
+    <p>Now go to work on your client computer.</p>
+    <p>Download Clash.Meta with Restls Support from <a href="https://github.com/3andne/Clash.Meta/releases">https://github.com/3andne/Clash.Meta/releases</a>. Prebuilt binaries are available for macOS Intel, macOS ARM ("Apple Silicon"), Linux Intel, Linux ARM, Windows Intel, and Windows ARM.</p>
+    <p>Create a configuration file <code>~/.config/clash/config.yaml</code>. You can use the one below as a template to start with. Consult the Clash wiki at <a href="https://clash.wiki">https://clash.wiki</a> (简体中文) or <a href="https://en.clash.wiki">https://en.clash.wiki</a> (English) to learn how Clash configuration works.</p>
+<pre>port: 7890
+socks-port: 7891
+mode: rule
+
+proxies:
+  - name: restls-tls13
+    type: ss
+    server: YOUR.SERVER.IP.ADDRESS
+    port: 443
+    cipher: chacha20-ietf-poly1305
+    password: "h9n40xhka0i2cqms"
+    plugin: restls
+    plugin-opts:
+      host: "www.microsoft.com"
+      password: "bONgnNUylELevNbN"
+      version-hint: "tls13"
+      client-id: chrome
+
+rules:
+  - IP-CIDR,127.0.0.0/8,DIRECT
+  - IP-CIDR,10.0.0.0/8,DIRECT
+  - IP-CIDR,192.168.0.0/16,DIRECT
+  - GEOIP,CN,DIRECT
+  - MATCH,restls-tls13</pre>
+    <p>Run Clash.Meta with your configuration file.</p>
+    <p>Typical response:</p>
+    <blockquote><code>INFO[2023-07-20T16:47:26.393581-07:00] Start initial configuration in progress<br>
+INFO[2023-07-20T16:47:26.393743-07:00] Geodata Loader mode: memconservative<br>      
+WARN[2023-07-20T16:47:26.394501-07:00] Deprecated: Use Sniff instead<br>     
+INFO[2023-07-20T16:47:26.39452-07:00] Initial configuration complete, total time: 0ms<br>
+INFO[2023-07-20T16:47:26.39453-07:00] Sniffer is closed<br>              
+INFO[2023-07-20T16:47:26.39606-07:00] Start initial compatible provider default<br>
+INFO[2023-07-20T16:47:26.401399-07:00] HTTP proxy listening at: 127.0.0.1:7890<br> 
+INFO[2023-07-20T16:47:26.401506-07:00] SOCKS proxy listening at: 127.0.0.1:7891</code></blockquote>
+    <p>Configure your browser to use the SOCKS proxy on localhost port <code>7891</code>. For example, in Firefox:</p>
+    <ol>
+      <li>From the hamburger menu, open <strong>Settings</strong>.</li>
+      <li>Select the <strong>General</strong> page.</li>
+      <li>Scroll down to <strong>Network Settings</strong>.</li>
+      <li>Click <strong>Settings</strong>.</li>
+      <li>Select <strong>Manual proxy configuration</strong>.</li>
+      <li>Specify SOCKS Host <code>127.0.0.1</code>.</li>
+      <li>Specify Port <code>7891</code>.</li>
+      <li>Select <strong>SOCKS v5</strong>.</li>
+      <li>Check <strong>Proxy DNS when using SOCKS v5</strong>.</li>
+      <li>Click <strong>OK</strong>.</li>
+    </ol>
+
+  </div>
+</body>
+
+</html>
