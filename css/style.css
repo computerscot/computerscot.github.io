@@ -39,17 +39,17 @@ pre {
 }
 
 a:link {
-  color: blue;
+  color: #005eb8;
   text-decoration: none;
 }
 
 a:visited {
-  color: blue;
+  color: #005eb8;
   text-decoration: none;
 }
 
 a:hover {
-  color: blue;
+  color: #005eb8;
   text-decoration: underline;
 }
 
