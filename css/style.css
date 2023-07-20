@@ -1,7 +1,13 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
 body {
   color: #000;
   background-color: #e5eef7;
 }
+
 h1,
 h2,
 h3,
@@ -25,7 +31,7 @@ pre {
   line-height: 1.6em;
 }
 
-#wrapper {
+.wrapper {
   max-width: 36em;
   margin: 0 auto;
 }
@@ -55,4 +61,37 @@ img {
   max-width: 100%;
   height: auto;
   margin: 0 auto;
+}
+
+#bar {
+  color: #fff;
+  background-color: #005eb8;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+}
+
+#bar p {
+  font-family: sans-serif, sans-serif;
+  font-size: 200%;
+  font-weight: bold;
+}
+
+#bar a:link {
+  color: white;
+  text-decoration: none;
+}
+
+#bar a:visited {
+  color: white;
+  text-decoration: none;
+}
+
+#bar a:hover {
+  color: white;
+  text-decoration: none;
+}
+
+#bar a:active {
+  color: yellow;
+  text-decoration: none;
 }
