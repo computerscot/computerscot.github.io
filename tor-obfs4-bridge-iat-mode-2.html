@@ -29,7 +29,7 @@
       <li><code>iat-mode=2</code> (split data into variable-length packets)</li>
     </ul>
     <p>This post outlines the process for setting up a private Tor obfs4 bridge with <code>iat-mode=2</code> on both server and client. By using obfs4, on a bridge that is private, with obfuscated Inter-Arrival Time (IAT) due to variable-length packets, Tor is in its most highly obfuscated configuration.</p>
-    <p>The disadvantage of a private bridge is that only you and your friends can use it. You could make the bridge public, but then it would vulnerable to having its IP address scraped by certain countries. So consider the alternative of helping people in extremely censored countries. At the end of this tutorial, send your private bridge line to <code>frontdesk@torproject.org</code>. They will share your bridge with people who really need it!</p>
+    <p>The disadvantage of a private bridge is that only you and your friends can use it. You could make the bridge public, but then it would vulnerable to having its IP address scraped by certain countries. So consider the alternative of helping people in extremely censored countries. Once you've set up and tested your bridge, send your private bridge line to <code>frontdesk@torproject.org</code>. They will share your bridge with people who really need it!</p>
 
     <h2>Server</h2>
     <p>The server in the examples is running Ubuntu 22.04.</p>
@@ -91,20 +91,20 @@ CookieAuthentication 1</pre>
     <blockquote><code>Bridge obfs4 &lt;IP ADDRESS&gt;:&lt;PORT&gt; &lt;FINGERPRINT&gt; cert=YYY...ZZZ iat-mode=2</code></blockquote>
     <p>Obtain your bridge fingerprint:
     <blockquote><code>cat /var/lib/tor/fingerprint</code></blockquote>
-    <p>Use these to compose the final Tor obfs4 bridge line. Remember it is the <code>ServerTransportListenAddr</code> port, not the <code>ORPort</code>, that the user needs to have in the bridge line.</p>
+    <p>Use the template and the fingerprint to compose the final Tor obfs4 bridge line. Remember it is the <code>ServerTransportListenAddr</code> port, not the <code>ORPort</code>, that the user needs to have in the bridge line.</p>
     <p>Install the <code>nyx</code> relay monitor:</p>
     <blockquote><code>apt install -y python3-pip</code></blockquote>
     <blockquote><code>pip3 install nyx</code></blockquote>
-    <p>After about three hours, you can see how your bridge looks from the Tor Project's point of view on the Tor Project dot Org <a href="https://metrics.torproject.org/rs.html#search">Relay Search</a> page.</p>
+    <p>Also, after about three hours, you can see how your bridge looks from the Tor Project's point of view on the Tor Project <a href="https://metrics.torproject.org/rs.html#search">Relay Search page</a>.</p>
 
     <h2>Client</h2>
-    <p>Download the Tor Browser installer for your platform from <a href="https://www.torproject.org/download" target="_blank">https://www.torproject.org/download</a>. For situations where <code>*.torproject.org</code> is blocked, you can download the Tor Browser installer from a mirror such as the <a href="https://archive.org/details/@gettor" target="_blank">Internet Archive</a>. If you need further help in downloading Tor, email <code>frontdesk@torproject.org</code>.</p>
+    <p>Download the Tor Browser installer for your platform from <a href="https://www.torproject.org/download" target="_blank">https://www.torproject.org/download</a>. For situations where <code>*.torproject.org</code> is blocked, or if you need further help in downloading Tor, email <code>frontdesk@torproject.org</code>.</p>
     <p>When Tor Browser starts up, click <strong>Configure Connection</strong>.</p>
     <p>Click <strong>Add a Bridge Manually</strong>.</p>
-    <p>Enter your private obfs4 bridge line that ends with <code>iat-mode=2</code>.</p>
+    <p>Enter your private obfs4 bridge line with the ending <code>iat-mode=2</code>.</p>
     <img src="img/009.png" alt="Adding an obfs4 bridge line manually into Tor Browser">
     <p><strong>Connect</strong> to the Tor network.</p>
-    <p>Note: When I tested this, the connection got to 50% progress, and then there was a delay of about 2 minutes before the connection was complete. It may be necessary to wait a while the first time you connect to your bridge.</p>
+    <p>When I tested this, the connection got to 50% progress, and then there was a delay of about 2 minutes before the connection was complete. It may be necessary to wait a few minutes the first time you connect to your bridge.</p>
 
   </div>
 </body>
