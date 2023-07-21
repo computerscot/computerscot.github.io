@@ -61,7 +61,7 @@
     <p>Run Restls with the given script (this is all one long command):</p>
     <blockquote><code>restls -s "www.microsoft.com" -l "0.0.0.0:443" -p bONgnNUylELevNbN -f "127.0.0.1:8388" --script "200?100,400?100,1200?200<1,1100~300,1000~100<1,2500~500,1300~50,1300~50,100~1200"</code></blockquote>
     <p>Typical response:</p>
-    <blockquote><code>2023-07-20T23:38:36.267091Z  INFO Restls server started as www.microsoft.com:443 on 0.0.0.0:443, forwarding to 127.0.0.1:8388</code></blockquote>
+    <blockquote><code>INFO Restls server started as www.microsoft.com:443 on 0.0.0.0:443, forwarding to 127.0.0.1:8388</code></blockquote>
     <p>To detach from the <code>screen</code> session, do <strong>Ctrl</strong>+<strong>a</strong> immediately followed by <strong>d</strong>.</p>
     <p>Restls is now listening on port <code>tcp/443</code>.</p>
     <p>Your work on the server is done.</p>
@@ -99,13 +99,13 @@ rules:
     <p>Run Clash.Meta from the command line. Since the configuration file is in the default location, you should not need to specify it explicitly.</p>
     <p>Typical response:</p>
     <blockquote><code>INFO[2023-07-20T16:47:26.393581-07:00] Start initial configuration in progress<br>
-INFO[2023-07-20T16:47:26.393743-07:00] Geodata Loader mode: memconservative<br>      
-WARN[2023-07-20T16:47:26.394501-07:00] Deprecated: Use Sniff instead<br>     
-INFO[2023-07-20T16:47:26.39452-07:00] Initial configuration complete, total time: 0ms<br>
-INFO[2023-07-20T16:47:26.39453-07:00] Sniffer is closed<br>              
-INFO[2023-07-20T16:47:26.39606-07:00] Start initial compatible provider default<br>
-INFO[2023-07-20T16:47:26.401399-07:00] HTTP proxy listening at: 127.0.0.1:7890<br> 
-INFO[2023-07-20T16:47:26.401506-07:00] SOCKS proxy listening at: 127.0.0.1:7891</code></blockquote>
+INFO Geodata Loader mode: memconservative<br>      
+WARN Deprecated: Use Sniff instead<br>     
+INFO Initial configuration complete, total time: 0ms<br>
+INFO Sniffer is closed<br>              
+INFO Start initial compatible provider default<br>
+INFO HTTP proxy listening at: 127.0.0.1:7890<br> 
+INFO SOCKS proxy listening at: 127.0.0.1:7891</code></blockquote>
     <p>Finally, configure your browser to use the SOCKS proxy on localhost port <code>7891</code>. For example, in Firefox you can do that as follows:</p>
     <ol>
       <li>From the hamburger menu, open <strong>Settings</strong>.</li>
