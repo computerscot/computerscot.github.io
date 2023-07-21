@@ -63,8 +63,8 @@
     <p>Typical response:</p>
     <blockquote><code>2023-07-20T23:38:36.267091Z  INFO Restls server started as www.microsoft.com:443 on 0.0.0.0:443, forwarding to 127.0.0.1:8388</code></blockquote>
     <p>To detach from the <code>screen</code> session, do <strong>Ctrl</strong>+<strong>a</strong> immediately followed by <strong>d</strong>.</p>
-    <p>Restls is listening on port <code>tcp/443</code>.</p>
-    <p>Your work on the server is done for now.</p>
+    <p>Restls is now listening on port <code>tcp/443</code>.</p>
+    <p>Your work on the server is done.</p>
 
     <h2>Install and configure Clash.Meta Restls fork on client</h2>
     <p>Now go to work on your client computer.</p>
@@ -94,7 +94,7 @@ rules:
   - IP-CIDR,192.168.0.0/16,DIRECT
   - GEOIP,CN,DIRECT
   - MATCH,restls-tls13</pre>
-    <p>Run Clash.Meta with your configuration file.</p>
+    <p>Run Clash.Meta from the command line. Since the configuration file is in the default location, you should not need to specify it explicitly.</p>
     <p>Typical response:</p>
     <blockquote><code>INFO[2023-07-20T16:47:26.393581-07:00] Start initial configuration in progress<br>
 INFO[2023-07-20T16:47:26.393743-07:00] Geodata Loader mode: memconservative<br>      
@@ -104,7 +104,7 @@ INFO[2023-07-20T16:47:26.39453-07:00] Sniffer is closed<br>
 INFO[2023-07-20T16:47:26.39606-07:00] Start initial compatible provider default<br>
 INFO[2023-07-20T16:47:26.401399-07:00] HTTP proxy listening at: 127.0.0.1:7890<br> 
 INFO[2023-07-20T16:47:26.401506-07:00] SOCKS proxy listening at: 127.0.0.1:7891</code></blockquote>
-    <p>Configure your browser to use the SOCKS proxy on localhost port <code>7891</code>. For example, in Firefox:</p>
+    <p>Finally, configure your browser to use the SOCKS proxy on localhost port <code>7891</code>. For example, in Firefox you can do that as follows:</p>
     <ol>
       <li>From the hamburger menu, open <strong>Settings</strong>.</li>
       <li>Select the <strong>General</strong> page.</li>
