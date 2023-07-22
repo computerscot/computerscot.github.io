@@ -21,7 +21,8 @@
   </div>
   <div class="wrapper">
     <h1>Tor Obfs4 Bridge with IAT-MODE=2</h1>
-    <p><em>July 21, 2023</em></p>
+    <p><em>July 22, 2023</em></p>
+    <p>The <a href="https://community.torproject.org/relay/setup/bridge">basic instructions for setting up a bridge</a> appear on the Tor Project website. This post shows how the instructions worked in practice for one particular scenario: a censor-resistant configuration on an Ubuntu 22.04 server. The particular requirements here were inspired by comments on the <a href="https://forum.torproject.org">Tor Project Forum</a> on the needs of users in countries with extreme censorship.</p>
     <p>Tor obfs4 bridges have a rarely used feature for obfuscating packet lengths:</p>
     <ul>
       <li><code>iat-mode=0</code> (no obfuscation)</li>
@@ -60,7 +61,7 @@
     <blockquote><code>systemctl daemon-reload</code></blockquote>
     <p>Edit the Tor configuration file:</p>
     <blockquote><code>vi /etc/tor/torrc</code></blockquote>
-    <p>Use the template below, making your own changes to public IPv4 address, both port numbers, contact info, and bridge nickname. You will need to open the <code>ORPort</code> and the <code>ServerTransportListenAddr</code> port in your server's firewall.</p>
+    <p>Use the template below, making your own changes to public IPv4 address, both port numbers, contact info, and bridge nickname. You will need to open the <code>ORPort</code> and the <code>ServerTransportListenAddr</code> port in your server's firewall. The server public IPv4 <code>Address</code> was needed only because of the way the particular VPS vendor set up their networking. Normally Tor can determine it automatically. Also notice that the pluggable transport listening address was specified as <codetcp/>9456</code> just as an example. As you can read on the <a href="https://forum.torproject.org">Tor Project Forum</a>, for some countries you can only use certain ports, e.g. <code>tcp/80</code>, <code>tcp/443</code>, or <code>tcp/8080</code>.</p>
 <pre>Log notice file /var/log/tor/log
 ORPort 9123 IPv4Only
 Address XX.XX.XX.XX
