@@ -21,7 +21,7 @@
   </div>
   <div class="wrapper">
     <h1>WireGuard over Xray</h1>
-    <p><em>July 19, 2023</em></p>
+    <p><em>July 22, 2023</em></p>
     <p>This post is a work-in-process and has not been tested yet. It consists of notes gathered from various sources.</p>
     <p>The scenario is that you want to connect to a WireGuard server at a remote location, but your WireGuard packets are being detected and blocked by a firewall. Therefore you decide to pass your WireGuard packets through an Xray tunnel. This is only possible on desktop platforms (Linux, macOS, or Windows), not on mobile devices.</p>
     <p>The server IP address is given in the examples as:</p>
@@ -179,11 +179,13 @@
     </ol>
 
     <h2>WireGuard client</h2>
-    <p>WireGuard clients are available for most platforms from <a href="https://www.wireguard.com/install">https://www.wireguard.com/install</a>.</p>
+    <p>WireGuard clients are available for most platforms from <a href="https://www.wireguard.com/install">https://www.wireguard.com/install</a>. GUI clients are available for Windows and macOS. For Linux you must install from the command line:</p>
+    <blockquote><code>sudo apt install -y wireguard</code></blockquote>
     <p>Make one vital change to the generated client configuration. The WireGuard client must think it is talking to a server on localhost, which in fact is where the Xray <code>dokodemo-door</code> is listening.</p>
     <blockquote><code>Endpoint = 127.0.0.1:51820</code></blockquote>
-    <p>Now import the amended client configuration into your WireGuard client.</p>
-    <p>Bring up the WireGuard tunnel.</p>
+    <p>Now import the amended client configuration into your WireGuard client. Bring up the WireGuard tunnel. You can do this in the GUI client for Windows or macOS. For Linux you must bring up the interface from the command line:</p>
+    <blockquote><code>cd ~/Downloads</code></blockquote>
+    <blockquote><code>sudo wq-quick up wg0-client-client1.conf</code></blockquote>
     <p>You should now have an end-to-end connection through the Xray tunnel.</p>
     
   </div>
