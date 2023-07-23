@@ -22,7 +22,6 @@
   <div class="wrapper">
     <h1>WireGuard over Xray</h1>
     <p><em>July 23, 2023</em></p>
-    <p>This post is a work-in-process and has not been tested yet. It consists of notes gathered from various sources.</p>
     <p>The scenario is that you want to connect to a WireGuard server at a remote location, but your WireGuard packets are being detected and blocked by a firewall. Therefore you decide to pass your WireGuard packets through an Xray tunnel. This is only possible on desktop platforms (Linux, macOS, or Windows), not on mobile devices.</p>
     <p>The server IP address is given in the examples as:</p>
     <blockquote><code>YOUR.SERVER.IP.ADDRESS</code></blockquote>
@@ -36,10 +35,10 @@
     <p>Securely download the client configuration file that the script generates.</p>
 
     <h2>Xray server</h2>
-    <p>Port <code>tcp/443</code> must be open for input on the server.</p>
+    <p>Open port <code>tcp/443</code> for input on the server.</p>
     <p>Install Xray-core on your Xray server using the latest beta, and configure it to run as root:</p>
     <blockquote><code>bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install --beta -u root</code></blockquote>
-    <p>Example of a completed server configuration file <code>/usr/local/etc/xray/config.json</code>:</p>
+    <p>Create your Xray configuration file. Here is an example of a completed server configuration file <code>/usr/local/etc/xray/config.json</code>:</p>
 <pre>
 {
     "log": {
@@ -90,7 +89,7 @@
     <blockquote><code>systemctl status xray</code></blockquote>
 
     <h2>Xray client</h2>
-    <p>Download the Xray CLI client for your operating system and CPU from <a href="https://github.com/XTLS/Xray-core/releases">https://github.com/XTLS/Xray-core/releases</a>.</p>
+    <p>Download the Xray CLI client for your operating system and CPU from <a href="https://github.com/XTLS/Xray-core/releases">https://github.com/XTLS/Xray-core/releases</a>. Unzip the zip file.</p>
     <p>Create a file <code>config.json</code> in the same folder as the <code>xray</code> executable. Following is a template you can use for your client configuration <code>config.json</code>. Note that the Xray client will accept <code>dokodemo-door</code> input on port <code>51820</code>. This part of the configuration is based on the <a href="https://xtls.github.io/en/config/inbounds/dokodemo.html#inboundconfigurationobject">Xray documentation</a>.</p>
 <pre>{
     "log": {
@@ -147,6 +146,7 @@
     <p>Set the CLI client running with the above <code>config.json</code>:</p>
     <blockquote><code>./xray -c config.json</code></blockquote>
     <p>Leave the terminal window open with the <code>xray</code> program running in it.</p>
+    <img src="img/081.png" alt="Terminal window with xray program running in it">
 
     <h2>Prevent routing loop</h2>
     <p>This is the critical step to get the whole thing to work. Normally WireGuard will route your entire Internet traffic through the WireGuard interface. You need to override that behavior for one specific address, namely the IP address of your server. Traffic for the server must not go back into WireGuard. That would create an infinite loop. Packets for the server must go out directly over the default gateway.</p>
@@ -164,9 +164,11 @@
     <blockquote><code>sudo apt install -y resolvconf wireguard</code></blockquote>
     <p>Make one last change to the generated client configuration. The WireGuard client must think it is talking to a server on localhost, which in fact is where the Xray <code>dokodemo-door</code> is listening.</p>
     <blockquote><code>Endpoint = 127.0.0.1:51820</code></blockquote>
+    <img src="img/082.png" alt="WireGuard client configuration file on Ubuntu Linux">
     <p>Now import the amended client configuration into your WireGuard client. Bring up the WireGuard tunnel. You can do this in the GUI client for Windows or macOS. For Linux you must bring up the interface from the command line:</p>
     <blockquote><code>sudo mv ~/Downloads/wg0-client-client1.conf /etc/wireguard/wg0.conf</code></blockquote>
     <blockquote><code>sudo wg-quick up wg0</code></blockquote>
+    <img src="img/083.png" alt="WireGuard client running on Ubuntu Linux">
     <p>You should now have an end-to-end connection through the Xray tunnel.</p>
     
   </div>
