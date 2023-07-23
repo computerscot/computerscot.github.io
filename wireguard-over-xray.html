@@ -21,7 +21,7 @@
   </div>
   <div class="wrapper">
     <h1>WireGuard over Xray</h1>
-    <p><em>July 22, 2023</em></p>
+    <p><em>July 23, 2023</em></p>
     <p>This post is a work-in-process and has not been tested yet. It consists of notes gathered from various sources.</p>
     <p>The scenario is that you want to connect to a WireGuard server at a remote location, but your WireGuard packets are being detected and blocked by a firewall. Therefore you decide to pass your WireGuard packets through an Xray tunnel. This is only possible on desktop platforms (Linux, macOS, or Windows), not on mobile devices.</p>
     <p>The server IP address is given in the examples as:</p>
@@ -150,25 +150,6 @@
 
     <h2>Prevent routing loop</h2>
     <p>This is the critical step to get the whole thing to work. Normally WireGuard will route your entire Internet traffic through the WireGuard interface. You need to override that behavior for one specific address, namely the IP address of your server. Traffic for the server must not go back into WireGuard. That would create an infinite loop. Packets for the server must go out directly over the default gateway.</p>
-    <p>There are two possible ways to do this. Do one or the other, but not both.</p>
-
-    <h3>Option 1 -- Add static route</h3>
-    <p>A static route to just one IP address takes advantage of the fact that routing table rules are evaluated in the order more specific to less specific.</p>
-    <p>For <strong>Linux</strong>, display your current default gateway with the command:</p>
-    <blockquote><code>sudo ip route</code></blockquote>
-    <p>Add a static route to your Xray server with the command:</p>
-    <blockquote><code>sudo ip route add YOUR.SERVER.IP.ADDRESS via &lt;gateway_address&gt; dev &lt;interface_name&gt;</code></blockquote>
-    <p>For <strong>macOS</strong>, display your current default gateway with the command:</p>
-    <blockquote><code>netstat -nr -f inet</code></blockquote>
-    <p>Add a static route to your Xray server with the command:</p>
-    <blockquote><code>sudo route -nv add YOUR.SERVER.IP.ADDRESS &lt;gateway_address&gt;</code></blockquote>
-    <p>For <strong>Windows</strong>, display your current default gateway with the command:</p>
-    <blockquote><code>route print</code></blockquote>
-    <p>Add a static route to your Xray server in a terminal window running as Administrator with the command:</p>
-    <blockquote><code>route add YOUR.SERVER.IP.ADDRESS MASK 255.255.255.255 &lt;gateway_address&gt; &lt;metric_cost&gt;</code></blockquote>
-
-    <h3>Option 2 -- Adjust AllowedIPs</h2>
-    <p>The idea is that WireGuard should handle traffic for all IP addresses except the IP address of the Xray server. Traffic for the Xray server must be sent directly, otherwise you will get a routing loop.</p>
     <p>Open a browser. Visit <a href="https://www.procustodibus.com/blog/2021/03/wireguard-allowedips-calculator">https://www.procustodibus.com/blog/2021/03/wireguard-allowedips-calculator</a>.</p>
     <ol>
       <li>Set Allowed IPs to <code>0.0.0.0/0,::/0</code>.</li>
@@ -181,10 +162,10 @@
     <h2>WireGuard client</h2>
     <p>WireGuard clients are available for most platforms from <a href="https://www.wireguard.com/install">https://www.wireguard.com/install</a>. GUI clients are available for Windows and macOS. For Linux you must install from the command line:</p>
     <blockquote><code>sudo apt install -y resolvconf wireguard</code></blockquote>
-    <p>Make one vital change to the generated client configuration. The WireGuard client must think it is talking to a server on localhost, which in fact is where the Xray <code>dokodemo-door</code> is listening.</p>
+    <p>Make one last change to the generated client configuration. The WireGuard client must think it is talking to a server on localhost, which in fact is where the Xray <code>dokodemo-door</code> is listening.</p>
     <blockquote><code>Endpoint = 127.0.0.1:51820</code></blockquote>
     <p>Now import the amended client configuration into your WireGuard client. Bring up the WireGuard tunnel. You can do this in the GUI client for Windows or macOS. For Linux you must bring up the interface from the command line:</p>
-    <blockquote><code>sudo mv ~/Downloads/wg0-client-client.conf /etc/wireguard/wg0.conf</code></blockquote>
+    <blockquote><code>sudo mv ~/Downloads/wg0-client-client1.conf /etc/wireguard/wg0.conf</code></blockquote>
     <blockquote><code>sudo wg-quick up wg0</code></blockquote>
     <p>You should now have an end-to-end connection through the Xray tunnel.</p>
     
