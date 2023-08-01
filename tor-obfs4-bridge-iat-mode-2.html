@@ -90,6 +90,7 @@ AssumeReachable 1</pre>
     <blockquote><code>[notice] Now checking whether IPv4 ORPort XX.XX.XX.XX:9123 is reachable... (this may take up to 20 minutes -- look for log messages indicating success)</code></blockquote>
     <blockquote><code>[notice] Self-testing indicates your ORPort XX.XX.XX.XX:9123 is reachable from the outside. Excellent. Publishing server descriptor.</code></blockquote>
     <blockquote><code>[notice] Performing bandwidth self-test...done.</code></blockquote>
+    <p>The reachability lines will not appear if you used the options to completely hide your <code>ORPort</code>.</p>
     <p>Obtain a template for the bridge line:</p>
     <blockquote><code>cat /var/lib/tor/pt_state/obfs4_bridgeline.txt</code></blockquote>
     <p>It will look like this:</p>
