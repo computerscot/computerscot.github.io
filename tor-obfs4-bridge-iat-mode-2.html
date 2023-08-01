@@ -77,6 +77,10 @@ ContactInfo you@example.com
 Nickname YourBridgeNickname
 ControlPort 9051
 CookieAuthentication 1</pre>
+    <p>An alternative is to replace the <code>ORPort</code> and <code>Address</code> lines with:</p>
+<pre>ORPort 127.0.0.1:auto
+AssumeReachable 1</pre>
+    <p>These make the <code>ORPort</code> completely hidden. It need not be opened in your server firewall, and it cannot be probed by censors.</p>  
     <p>Start your bridge running with your revised configuration:</p>
     <blockquote><code>systemctl restart tor@default</code></blockquote>
     <p>Check the logs:</p>
