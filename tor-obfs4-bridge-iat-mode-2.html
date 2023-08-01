@@ -110,6 +110,23 @@ AssumeReachable 1</pre>
 
     <h2>Client</h2>
     <p>Download the Tor Browser installer for your platform from <a href="https://www.torproject.org/download" target="_blank">https://www.torproject.org/download</a>. For situations where <code>*.torproject.org</code> is blocked, or if you need further help in downloading Tor, email <code>frontdesk@torproject.org</code>.</p>
+    <ul>
+      <li>For <strong>Windows</strong> you will get an installer <code>.exe</code> file to run.</li>
+      <li>For <strong>macOS</strong> you will get a <code>.dmg</code> disk image file to install as an application.
+      <li>For <strong>Linux</strong> you will get a <code>.tar.xz</code> file to extract like this:
+      <ol>
+        <li><code>cd ~/Downloads</code></li>
+        <li><code>tar -xf tor-browser-linux64-*.tar.xz</code></li>
+        <li><code>cd tor-browser</code></li>
+        <li><code>./start-tor-browser.desktop --register-app</code></li>
+        <li>After registering the app, Tor Browser appears in your list of apps</li>
+        <li>Start the app, but don't connect to the Tor network just yet</li>
+        <li>On Ubuntu Linux with the GNOME desktop, you can right-click on Tor Browser in the launcher and select the option <strong>Add to Favorites</strong></li>
+      </ol>
+      </li>
+    </ul>
+
+    
     <p>When Tor Browser starts up, click <strong>Configure Connection</strong>.</p>
     <p>Click <strong>Add a Bridge Manually</strong>.</p>
     <p>Enter your private obfs4 bridge line with the ending <code>iat-mode=2</code>.</p>
