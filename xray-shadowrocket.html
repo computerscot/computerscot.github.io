@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Xray Shadowrocket</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="Xray Shadowrocket">
+  <meta property="og:description" content="How to configure an Xray server and Shadowrocket client">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://computerscot.github.io/img/computerscot.png">
+  <meta property="og:url" content="https://computerscot.github.io/xray-shadowrocket.html">
+</head>
+
+<body>
+  <div id="bar">
+    <div class="wrapper">
+      <p><a href="https://computerscot.github.io">computerscot.github.io</a></p>
+    </div>
+  </div>
+  <div class="wrapper">
+    <h1>Xray Shadowrocket</h1>
+    <p><em>August 3, 2023</em></p>
+    <h2>Xray server</h2>
+    <p>Install Xray-core on your server using the latest beta, and configure it to run as root:</p>
+    <blockquote><code>bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install --beta -u root</code></blockquote>
+    <p>Example of a completed server configuration file <code>/usr/local/etc/xray/config.json</code>:</p>
+<pre>
+{
+    "log": {
+        "loglevel": "warning"
+    },
+    "routing": {
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:cn",
+                    "geoip:private"
+                ],
+                "outboundTag": "block"
+            }
+        ]
+    },
+    "inbounds": [
+        {
+            "listen": "0.0.0.0",
+            "port": 443,
+            "protocol": "vless",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "3b5390c5-52a2-472d-8dc2-103ef508be6c",
+                        "flow": ""
+                    }
+                ],
+                "decryption": "none"
+            },
+            "streamSettings": {
+                "network": "h2",
+                "security": "reality",
+                "realitySettings": {
+                    "show": false,
+                    "dest": "www.lovelive-anime.jp:443",
+                    "xver": 0,
+                    "serverNames": [ 
+                        "www.lovelive-anime.jp"
+                    ],
+                    "privateKey": "QNraK6EdxPNOzfbL2G1BTl_OeMSxm49H5vps2qzQ3E0",
+                    "shortIds": [ 
+                        "77c2358dc476ae9e"
+                    ]
+                }
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "freedom",
+            "tag": "direct"
+        },
+        {
+            "protocol": "blackhole",
+            "tag": "block"
+        }
+    ]
+}
+</pre>
+    <p>Restart <code>xray</code> systemd service with your final configuration file:</p>
+    <blockquote><code>systemctl restart xray</code></blockquote>
+    <blockquote><code>systemctl status xray</code></blockquote>
+
+    <h2>Shadowrocket GUI</h2>
+    <p>There are four main pages in the Shadowrocket graphical user interface:</p>
+    <ul>
+      <li><strong>Home</strong>. Here you can scan a QR code or manually key in a server (Shadowsocks, ShadowsocksR, Subscription, Vmess, VLESS, GOST Relay, Socks5, Socks5 over TLS, HTTP, HTTPS, HTTP2, Trojan, Hysteria, TUIC, WireGuard, Snell, Brook, or Lua). The main Connect toggle switch (ON/OFF) is on this page. You can specify a Global Routing strategy (based on the configuration, always proxy, always direct, or scene). There is also a Connectivity Test. The remainder of this page is a list of your servers.</li>
+      <li><strong>Config</strong>. Here you configure Shadowrocket (general, rules, hosts, URL rewrite, HTTPS decryption, script, and proxy group).</li>
+      <li><strong>Data</strong>. Here is where you will find statistics and logs. You can also export and import configurations.</li>
+      <li><strong>Settings</strong>. The languages available are English, Japanese, Korean, Simplified Chinese, Traditional Chinese, and Vietnamese. Here you can set things like test method, on demand rules, proxy port, and many other settings.</li>    
+    </ul>
+    <p>Here is an example of a completed client configuration:</p>
+    <img src="img/001.png" alt="Shadowrocket edit server for Xray">
+    <p>To route all traffic through the proxy server, specify a Global Routing setting of Proxy.</p>
+    <img src="img/002.png" alt="Shadowrocket route all traffic through proxy">
+       
+  </div>
+</body>
+
+</html>
