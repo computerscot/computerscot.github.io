@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tor through Clash</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="Tor through Clash">
+  <meta property="og:description" content="How to configure Tor Browser to proxy through Clash for Windows">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://computerscot.github.io/img/computerscot.png">
+  <meta property="og:url" content="https://computerscot.github.io/tor-through-clash.html">
+</head>
+
+<body>
+  <div id="bar">
+    <div class="wrapper">
+      <p><a href="https://computerscot.github.io">computerscot.github.io</a></p>
+    </div>
+  </div>
+  <div class="wrapper">
+    <h1>Tor through Clash</h1>
+    <p><em>August 14, 2023</em></p>
+    <p>Someone was asking on Reddit how to configure Tor to proxy through Clash. I'm going to assume that what they meant was how to configure Tor Browser to proxy through Clash for Windows.</p>
+    <p>Get Clash for Windows from <a href="https://github.com/Fndroid/clash_for_windows_pkg/releases">https://github.com/Fndroid/clash_for_windows_pkg/releases</a>. Despite the name, there are actually packages for macOS and Linux as well as Windows. For Windows it is supplied as a <code>.7z</code> file, so you'll need <a href="https://www.7-zip.org">7-Zip</a> to extract the archive. Extract it to its own folder named, for example, <code>Clash.for.Windows-0.20.31-win</code>. Inside that folder you'll find the <code>Clash for Windows.exe</code> application. The default listening port for the client is <code>7890></code>. You'll need either your own server or a subscrption to a server provider ("airport") for the client to connect to.</p>
+    <p>Download and install the Tor Browser from <a href="https://www.torproject.org">https://www.torproject.org</a>.</p>
+    <p>When you run the Tor Browser for the first time, click <strong>Configure Connection</strong>.</p>
+    <p>Scroll down and click the <strong>Settings</strong> button at the bottom to configure how you connect to the internet. Check <strong>I use a proxy to connect to the Internet</strong>. The type is <strong>SOCKS5</strong>, the address is <code>127.0.0.1</code>, and the port is <code>7890</code>. Click <strong>OK</strong>.</p>
+    <p>I have found it more reliable to click <strong>Select a Built-In Bridge</strong>. This should not be necessary, since the server will already be outside the GFW. Perhaps it helps because built-in bridges are faster than random entry nodes. Select <strong>obfs4</strong>. Click <strong>Connect</strong>.</p>
+    <p>Now you can test your connection by trying to reach a Tor-only site.</p>
+    <p>BBC News in simplified Chinese:</p>
+    <blockquote><code>https://www.bbcweb3hytmzhn5d532owbu6oqadra5z3ar726vq5kgwwn6aucdccrad.onion/zhongwen/simp</code></blockquote>
+    <p>DW News in simplified Chinese:</p>
+    <blockquote><code>https://www.dwnewsgngmhlplxy6o2twtfgjnrnjxbegbwqx6wnotdhkzt562tszfid.onion/zh/?zhongwen=simp</code></blockquote>
+    <p>New York Times in simplified Chinese:</p>
+    <blockquote><code>https://cn.nytimesn7cgmftshazwhfgzm37qxb44r64ytbb2dj3x62d2lljsciiyd.onion</code></blockquote>
+
+  </div>
+</body>
+
+</html>
+
+
