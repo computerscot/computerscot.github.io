@@ -26,29 +26,29 @@
     <p>This is an introductory tutorial. If you would like to learn more about Cloak, visit its GitHub repository at <a href="https://github.com/cbeuw/Cloak">https://github.com/cbeuw/Cloak</a>.</p>
 
     <h2>Server</h2>
-    <p>The server in this tutorial runs Ubuntu 22.04. The process will be similar on a Debian server. It is assumed that you are logged in as <code>root</code>.</p>
+    <p>The server in the tutorial runs Ubuntu 22.04. The process will be similar on a Debian server. It is assumed that you are logged in as <code>root</code>.</p>
     <p>Open ports <code>tcp/80</code> and <code>tcp/443</code> for Cloak. (You can, if you wish, change these ports in the Cloak server configuration file by changing the value of <code>BindAddr</code>.)</p>
 
     <p>Install OpenVPN:</p>
     <blockquote><code>curl -O https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh</code></blockquote>
     <blockquote><code>chmod +x openvpn-install.sh</code></blockquote>
     <blockquote><code>./openvpn-install.sh</code></blockquote>
-    <p>The IP address should be the public IP address of your server. You can use port (<code>1194</code>) for OpenVPN, since traffic will pass through Cloak before it reaches the OpenVPN server. <strong>Use protocol TCP for OpenVPN.</strong></p>
-    <p>At the end of the script's run, you are prompted to choose a name for the client, e.g. <code>xxxxxxxx</code>. The script then generates a client configuration file <code>xxxxxxxx.ovpn</code>.</p>
+    <p>When you are asked for the IP address, enter the public IP address of your server. You can use port <code>1194</code> for OpenVPN, since traffic will pass through Cloak before it reaches the OpenVPN server. <strong>Use protocol TCP for OpenVPN.</strong></p>
+    <p>At the end of the script's run, you are prompted to choose a name for the client, e.g. <code>xxxxxxxx</code>. The script then generates a client configuration file named, for example,  <code>xxxxxxxx.ovpn</code>.</p>
 
-    <p>Optionally reconfigure the OpenVPN server so that it listens on localhost only. This is optional if you keep the firewall closed for port <code>udp/1194</code>. If you do want to reconfigure OpenVPN, then edit your OpenVPN server configuration file. It will have a name similar to  <code>/etc/openvpn/server.conf</code>. Make OpenVPN listen on localhost only by inserting a line:</p>
+    <p>Optionally reconfigure the OpenVPN server so that it listens on localhost only. This is optional because we assume you keep the firewall closed for port <code>udp/1194</code>. Edit your OpenVPN server configuration file, e.g. <code>/etc/openvpn/server.conf</code>. Make OpenVPN listen on localhost only by inserting a line:</p>
     <blockquote><code>local 127.0.0.1</code></blockquote>
-    <p>Save the file. Restart OpenVPN server with this configuration:</p>
+    <p>Save the file. Restart OpenVPN server with your revised configuration:</p>
     <blockquote><code>systemctl restart openvpn@server</code></blockquote>
 
-    <p>Download the latest release of Cloak:</p>
+    <p>Download the latest release of Cloak and copy it to an executable directory:</p>
     <blockquote><code>wget https://github.com/cbeuw/Cloak/releases/download/v2.7.0/ck-server-linux-amd64-v2.7.0</code></blockquote>
     <blockquote><code>cp ck-server-linux-amd64-v2.7.0 /usr/local/bin/ck-server</code></blockquote>
     <blockquote><code>chmod +x /usr/local/bin/ck-server</code></blockquote>
 
     <p>Generate public and private keys:</p>
     <blockquote><code>ck-server -key</code></blockquote>
-    <p>The public key should be given to users. The private key should be kept secret. You will copy the private key into your server configuration file in a moment.</p>
+    <p>Give the public key to your users. The private key should be kept secret. You will copy the private key into your server configuration file in a moment.</p>
     <p>Example public key:</p>
     <blockquote><code>Fl1lvohMZwGxuZTVkLFe5PyAWijtgRZPwvkq8/UVqXg=</code></blockquote>
     <p>Example private key:</p>
@@ -92,14 +92,15 @@
     <blockquote><code>exit</code></blockquote>
 
     <h2>Client</h2>
+    <p>Our client in this tutorial runs Windows.</p>
 
     <p>Install the OpenVPN client from <a href="https://openvpn.net/community-downloads">https://openvpn.net/community-downloads</a>. For Windows you get an installer named <code>OpenVPN-2.6.6-I001-amd64.msi</code>, which you must run to install the Windows OpenVPN GUI client.</p>
 
     <p>Download the client configuration file:</p>
     <blockquote><code>scp root@YOUR.SERVER.IP.ADDRESS:xxxxxxxx.ovpn Downloads</code></blockquote>
-    <p>Do not import the client configuration file into the Windows OpenVPN GUI client just yet. You have to make a few changes to it first.</p>
+    <p>Do not import the client configuration file into the Windows OpenVPN GUI client just yet. You have to make a few changes to it. We will do that toward the end of the client set-up.</p>
 
-    <p>Download the latest release of Cloak from <a href="https://github.com/cbeuw/Cloak/releases">https://github.com/cbeuw/Cloak/releases</a>. For Windows the client is named <code>ck-client-windows-amd64-v2.7.0.exe</code>.</p>
+    <p>Before finalizing the OpenVPN configuration, we'll set up Cloak. Download the latest release of Cloak from <a href="https://github.com/cbeuw/Cloak/releases">https://github.com/cbeuw/Cloak/releases</a>. For Windows the client is named <code>ck-client-windows-amd64-v2.7.0.exe</code>.</p>
 
     <p>Obtain the server public key and your personal user id from the administrator of your server. In our example, the server public key is <code>Fl1lvohMZwGxuZTVkLFe5PyAWijtgRZPwvkq8/UVqXg=</code>, and your user id is <code>sEy7bAYtNj8lv59lf0onJQ==</code>.</p>
 
