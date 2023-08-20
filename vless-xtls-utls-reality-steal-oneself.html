@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Xray REALITY with 'steal oneself'</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="Xray REALITY with 'steal oneself'">
+  <meta property="og:description" content="Xray implementation of REALITY protocol with the 'steal oneself' configuration">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://computerscot.github.io/img/computerscot.png">
+  <meta property="og:url" content="https://computerscot.github.io/vless-xtls-utls-reality-steal-oneself.html">
+</head>
+
+<body>
+  <div id="bar">
+    <div class="wrapper">
+      <p><a href="https://computerscot.github.io">computerscot.github.io</a></p>
+    </div>
+  </div>
+  <div class="wrapper">
+    <h1>Xray REALITY with 'steal oneself'</h1>
+    <p><em>August 21, 2023</em></p>
+    <p>This article gives step-by-step instructions for <a href="https://github.com/chika0801/Xray-examples/tree/main/VLESS-XTLS-uTLS-REALITY/steal_oneself">https://github.com/chika0801/Xray-examples/tree/main/VLESS-XTLS-uTLS-REALITY/steal_oneself</a>. Here the stated SNI of the proxy server is in fact the correct SNI and matches the server's hostname.</p>
+
+    <h2>Get domain name</h2>
+    <p>You need to purchase a domain name (e.g. <code>example.com</code>). Point the hostname (e.g. <code>chika.example.com</code>) to your VPS IP address. Wait about 2-5 minutes for DNS resolution to take effect. You can check whether the returned IP address is correct by pinging the hostname you set. For example:</p>
+    <blockquote><code>ping chika.example.com</code></blockquote>
+
+    <h2>Open server firewall</h2>
+    <p>Open ports <code>tcp/80</code> and <code>tcp/443</code> in your server firewall.</p>
+
+    <h2>Get SSL certificate and key</h2>
+    <p>When using standalone mode to apply for or renew a certificate, the script will listen on port <code>tcp/80</code>. If port <code>tcp/80</code> is occupied, the script will fail. Therefore nothing else should be listening on port <code>tcp/80</code> at this stage.</p>
+    <p>In the sample commands, replace <code>chika.example.com</code> by your hostname.</p>
+    <p>Install the ACME shell script:</p>
+    <blockquote><code>apt install -y socat</code></blockquote>
+    <blockquote><code>curl https://get.acme.sh | sh</code></blockquote>
+    <p>Set a shorter alias for the ACME shell script:</p>
+    <blockquote><code>alias acme.sh=~/.acme.sh/acme.sh</code></blockquote>
+    <p>Set up ACME shell script auto-update:</p>
+    <blockquote><code>acme.sh --upgrade --auto-upgrade</code></blockquote>
+    <p>Change the default Certificate Authority to Let's Encrypt:</p>
+    <blockquote><code>acme.sh --set-default-ca --server letsencrypt</code></blockquote>
+    <p>Apply for an Elliptic Curve Cryptography certificate for <code>chika.example.com</code> in standalone mode. <code>ec-256</code> means <code>prime256v1</code> also known as <code>ECDSA P-256</code>.<p>
+    <blockquote><code>acme.sh --issue -d chika.example.com --standalone --keylength ec-256</code></blockquote>
+    <p>Install the <code>chika.example.com</code> certificate to the <code>/etc/ssl/private</code> directory:</p>
+    <blockquote><code>acme.sh --install-cert -d chika.example.com --ecc --fullchain-file /etc/ssl/private/fullchain.cer --key-file /etc/ssl/private/private.key</code></blockquote>
+    <p>Set the owner and group to work with the Xray server configuration file:</p>
+    <blockquote><code>chown -R nobody:nogroup /etc/ssl/private</code></blockquote>
+    <p>Force certificate renewal:</p>
+    <blockquote><code>acme.sh --renew -d chika.example.com --force --ecc</code></blockquote>
+
+    <h2>Install Xray on server</h2>
+    <p>Get the latest (<code>beta</code>) version of Xray:</p>
+    <blockquote><code>bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install --beta</code></blockquote>
+
+    <h2>Install Nginx on server</h2>
+    <p>Get the latest Nginx from the Nginx repositories:</p>
+<blockquote><code>apt install -y gnupg2 ca-certificates lsb-release ubuntu-keyring && curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor > /usr/share/keyrings/nginx-archive-keyring.gpg && echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/mainline/ubuntu `lsb_release -cs` nginx" > /etc/apt/sources.list.d/nginx.list && echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" > /etc/apt/preferences.d/99nginx && apt update -y && apt install -y nginx && mkdir -p /etc/systemd/system/nginx.service.d && echo -e "[Service]\nExecStartPost=/bin/sleep 0.1" > /etc/systemd/system/nginx.service.d/override.conf && systemctl daemon-reload</code></blockquote>
+
+    <h2>Edit Xray server configuration</h2>
+    <p>Generate your own UUID:</p>
+    <blockquote><code>xray uuid</code></blockquote>
+    <p>Generate your own public and private key:</p>
+    <blockquote><code>xray x25519</code></blockquote>
+    <p>Edit the configuration file:</p>
+    <blockquote><code>vi /usr/local/etc/xray/config.json</code></blockquote>
+    <p>Model the contents on <code>https://github.com/chika0801/Xray-examples/blob/main/VLESS-XTLS-uTLS-REALITY/steal_oneself/config_server.json</code>. Put in your generated <code>id</code> and <code>privateKey</code>. Replace the <code>serverNames</code>, making it match your SSL certificate name.</p>
+
+    <h2>Edit Nginx server configuration</h2>
+    <p>Edit the main Nginx configuration file:</p>
+    <blockquote><code>vi /etc/nginx/nginx.conf</code></blockquote>
+    <p>Model the contents on <code>https://github.com/chika0801/Xray-examples/blob/main/VLESS-XTLS-uTLS-REALITY/steal_oneself/nginx.conf</code>. Replace the <code>server_name</code>, making it match your SSL certificate name.</p>
+
+    <h2>Restart</h2>
+    <blockquote><code>systemctl restart xray</code></blockquote>
+    <blockquote><code>systemctl status xray</code></blockquote>
+    <blockquote><code>systemctl restart nginx</code></blockquote>
+    <blockquote><code>systemctl status nginx</code></blockquote>
+
+    <h2>Install v2rayN on Windows client</h2>
+    <p>Download and unzip the latest <code>v2rayN-With-Core.zip</code> from <a href="https://github.com/2dust/v2rayN/releases">https://github.com/2dust/v2rayN/releases</a>.</p>
+    <p>Download and unzip the latest <code>Xray-windows-64.zip</code> from <a href="https://github.com/XTLS/Xray-core/releases">https://github.com/XTLS/Xray-core/releases</a>.</p>
+    <p>Copy the latest <code>xray.exe</code> binary into your <code>v2rayN-With-Core\bin\Xray</code> folder, replacing the binary it came with.</p>
+    <p>Launch the v2rayN application, change the language to <code>en</code> (English), exit v2rayN, and restart v2rayN.</p>
+    <p>Configure the v2rayN client to match your server.</p>
+
+    <img src="img/127.png" alt="Xray REALITY with 'steal oneself'">
+
+  </div>
+</body>
+
+</html>
