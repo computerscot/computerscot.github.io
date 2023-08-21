@@ -73,6 +73,8 @@
     <p>Edit the main Nginx configuration file:</p>
     <blockquote><code>vi /etc/nginx/nginx.conf</code></blockquote>
     <p>Model the contents on <code>https://github.com/chika0801/Xray-examples/blob/main/VLESS-XTLS-uTLS-REALITY/steal_oneself/nginx.conf</code>. Replace the <code>server_name</code>, making it match your SSL certificate name.</p>
+    <p>This Nginx configuration includes a block to listen on port <code>tcp/80</code>. Since you are using the ACME script in standalone mode to apply for SSL certificate renewal, please remove or comment out this block. Otherwise, the automatic renewal of SSL certificates every 3 months will fail (because port <code>tcp/80</code> is occupied by Nginx).</p>
+    <p>Reference: <a href="https://github.com/net4people/bbs/issues/277#issuecomment-1686197062">https://github.com/net4people/bbs/issues/277#issuecomment-1686197062</a>.</p>
 
     <h2>Restart</h2>
     <blockquote><code>systemctl restart xray</code></blockquote>
