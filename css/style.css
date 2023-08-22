@@ -125,6 +125,7 @@ dd {
 pre,
 code {
   font-family: monospace, monospace;
+  color: #00ff00;
 }
 
 pre {
