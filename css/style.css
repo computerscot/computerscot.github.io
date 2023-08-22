@@ -96,3 +96,106 @@ img {
   color: yellow;
   text-decoration: none;
 }
+
+@media (prefers-color-scheme: dark) {
+	
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: #ffffff;
+  background-color: #000000;
+}
+
+h1,
+h2,
+h3,
+p,
+blockquote,
+li,
+td,
+dt,
+dd {
+  font-family: monospace, monospace;
+  line-height: 1.6em;
+}
+
+pre,
+code {
+  font-family: monospace, monospace;
+}
+
+pre {
+  margin-left: 3em;
+  line-height: 1.6em;
+}
+
+.wrapper {
+  max-width: 36em;
+  margin: 0 auto;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+}
+
+a:link {
+  color: #ffa147;
+  text-decoration: none;
+}
+
+a:visited {
+  color: #ffa147;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #ffa147;
+  text-decoration: underline;
+}
+
+a:active {
+  color: #00ffff;
+  text-decoration: underline;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+#bar {
+  color: #000000;
+  background-color: #ffa147;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+}
+
+#bar p {
+  font-family: monospace, monospace;
+  font-weight: bold;
+}
+
+#bar a:link {
+  color: #000000;
+  text-decoration: none;
+}
+
+#bar a:visited {
+  color: #000000;
+  text-decoration: none;
+}
+
+#bar a:hover {
+  color: #000000;
+  text-decoration: none;
+}
+
+#bar a:active {
+  color: #0000ff;
+  text-decoration: none;
+}
+
+}
