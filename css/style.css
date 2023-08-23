@@ -1,3 +1,5 @@
+@media (prefers-color-scheme: light) {
+
 html, body {
   margin: 0;
   padding: 0;
@@ -97,34 +99,41 @@ img {
   text-decoration: none;
 }
 
+}
+
 @media (prefers-color-scheme: dark) {
 	
-html, body {
-  margin: 0;
-  padding: 0;
-}
-
 body {
-  color: #ffffff;
+  color: #00b000;
   background-color: #000000;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: monospace, monospace;
+  font-size: 18px;
+  line-height: 24px;
 }
 
-h1,
-h2,
-h3,
-p,
-blockquote,
-li,
-td,
-dt,
-dd {
-  font-family: sans-serif, sans-serif;
-  line-height: 1.6em;
+h1 {
+  font-size: 18px;
+  font-weight: bold;
+  text-decoration: underline;
+  text-transform: uppercase;
+}
+
+h2 {
+  font-size: 18px;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: bold;
 }
 
 pre,
 code {
-  font-family: monospace, monospace;
+  color: #00ff00;
 }
 
 pre {
@@ -140,22 +149,22 @@ pre {
 }
 
 a:link {
-  color: #2d9aff;
+  color: #00b0b0;
   text-decoration: none;
 }
 
 a:visited {
-  color: #2d9aff;
+  color: #00b0b0;
   text-decoration: none;
 }
 
 a:hover {
-  color: #2d9aff;
+  color: #00b0b0;
   text-decoration: underline;
 }
 
 a:active {
-  color: #ff0000;
+  color: #b00000;
   text-decoration: underline;
 }
 
@@ -167,34 +176,34 @@ img {
 }
 
 #bar {
-  color: #000000;
-  background-color: #0077e6;
+  color: #00b0b0;
+  background-color: #000000;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
 }
 
 #bar p {
-  font-family: sans-serif, sans-serif;
+  font-family: monospace, monospace;
   font-weight: bold;
 }
 
 #bar a:link {
-  color: #000000;
+  color: #00b0b0;
   text-decoration: none;
 }
 
 #bar a:visited {
-  color: #000000;
+  color: #00b0b0;
   text-decoration: none;
 }
 
 #bar a:hover {
-  color: #000000;
+  color: #00b0b0;
   text-decoration: none;
 }
 
 #bar a:active {
-  color: #ff0000;
+  color: #b00000;
   text-decoration: none;
 }
 
