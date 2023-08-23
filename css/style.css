@@ -118,14 +118,13 @@ li,
 td,
 dt,
 dd {
-  font-family: monospace, monospace;
+  font-family: sans-serif, sans-serif;
   line-height: 1.6em;
 }
 
 pre,
 code {
   font-family: monospace, monospace;
-  color: #91c46c;
 }
 
 pre {
@@ -175,7 +174,7 @@ img {
 }
 
 #bar p {
-  font-family: monospace, monospace;
+  font-family: sans-serif, sans-serif;
   font-weight: bold;
 }
 
