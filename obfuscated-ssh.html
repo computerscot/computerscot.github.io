@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Obfuscated SSH</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="Obfuscated SSH">
+  <meta property="og:description" content="Use obfuscated SSH to disguise your traffic to your proxy server">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://computerscot.github.io/img/computerscot.png">
+  <meta property="og:url" content="https://computerscot.github.io/obfuscated-ssh.html">
+</head>
+
+<body>
+  <div id="bar">
+    <div class="wrapper">
+      <p><a href="https://computerscot.github.io">computerscot.github.io</a></p>
+    </div>
+  </div>
+  <div class="wrapper">
+    <h1>Obfuscated SSH</h1>
+    <p><em>August 23, 2023</em></p>
+    <p>In this post you use obfuscated SSH to disguise your traffic to your proxy server.</p>
+    <p>References:</p>
+    <ul>
+      <li><a href="https://zinglau.com/projects/ObfuscatedOpenSSHPatches.html">https://zinglau.com/projects/ObfuscatedOpenSSHPatches.html</a></li>
+      <li><a href="https://celo.net/members/index.php/knowledgebase/58/Windows---Obfuscated-SSH-Tunnel-Port-Forward.html">https://celo.net/members/index.php/knowledgebase/58/Windows---Obfuscated-SSH-Tunnel-Port-Forward.html</a></li>
+    </ul>
+  
+    <h2>Ubuntu server</h2>
+    <p>In our examples, the server runs Ubuntu 22.04 and you are logged in as <code>root</code>.</p>
+
+    <p>1. Choose ports for normal and obfuscated SSH. Our examples will be <code>tcp/22</code> and <code>tcp/8443</code> respectively. Open these ports for input in your server's firewall.</p>
+
+    <p>2. Add a user for obfuscated SSH. We will use the example of a user named <code>emily</code>:</p>
+    <blockquote><code>adduser emily</code></blockquote>
+
+    <p>3. Generate a secret keyword for obfuscated SSH:</p>
+    <blockquote><code>&lt; /dev/urandom tr -dc a-z-0-9 | head -c${1:-16};echo</code></blockquote>
+    <p>Our example will be:</p>
+    <blockquote><code>8d4r5b62wxbnllr1</code></blockquote>
+
+    <p>4. Use the following commands to install the obfuscated SSH package from <a href="https://launchpad.net/~zinglau/+archive/ubuntu/obfuscated-openssh/+packages">Launchpad</a>. In our example the version we will use is the one associated with Ubuntu 22.04, which is codenamed <code>jammy</code>:</p>
+    <blockquote><code>apt-add-repository ppa:zinglau/obfuscated-openssh</code></blockquote>
+    <blockquote><code>apt update</code></blockquote>
+    <blockquote><code>apt install -y ssh</code></blockquote>
+
+    <p>5. When multiple APT repositories are enabled, a package can exist in several of them. To know which one should be installed, APT assigns priorities to packages. The default is 500. Pinning allows you to manually set higher or lower priorities. To implement APT pinning, create a file <code>/etc/apt/preferences.d/openssh.pref</code> with the following contents:</p>
+<pre>Package: *
+Pin: release o=LP-PPA-zinglau-obfuscated-openssh
+Pin-Priority: 600</pre>
+
+    <p>6. After saving the file, verify successful pinning using:</p>
+    <blockquote><code>apt-cache policy openssh-server</code></blockquote>
+
+    <p>7. Edit <code>/etc/ssh/sshd_config</code>. Change the file to specify your chosen ports and keyword:</p>
+<pre>Port 22
+ObfuscatedPort 8443
+ObfuscateKeyword 8d4r5b62wxbnllr1</pre>
+
+    <p>8. If you intend to use password authentication, you must specify:</p>
+<pre>PasswordAuthentication yes</pre>
+
+    <p>9. After saving the file, restart the SSH daemon:</p>
+    <blockquote><code>systemctl restart sshd</code></blockquote>
+
+    <h2>Windows client</h2>
+ 
+    <p>1. Download and install the Bitvise SSH client for Windows from <a href="https://www.bitvise.com/ssh-client-download">https://www.bitvise.com/ssh-client-download</a>.</p>
+
+    <p>2. On the <strong>Login</strong> tab:</p>
+    <ul>
+      <li>For Server Host, put your server IP address or DNS name</li>
+      <li>For Port put <code>8443</code> in our example</li>
+      <li>Check the box to <strong>Enable Obfuscation</strong></li>
+      <li>Enter the Obfuscation keyword, which in our example is <code>8d4r5b62wxbnllr1</code></li>
+      <li>Under Authentication, put your username on the server (<code>emily</code> in our example)</li>
+      <li>For the Initial method, choose <strong>password</strong></li>
+    </ul>
+    <img src="img/130.png" alt="Bitvise SSH client Login tab">
+
+    <p>3. On the <strong>Services</strong> tab:</p>
+    <ul>
+      <li>Check the box for <strong>SOCKS/HTTP Port Forwarding</strong></li>
+      <li>Set the Listen interface to <code>127.0.0.1</code></li>
+      <li>Set the Listen port to <code>10808</code></li>
+    </ul>
+    <img src="img/131.png" alt="Bitvise SSH client Services tab">
+
+    <p>4. Click the <strong>Log in</strong> button.</p>
+
+    <p>5. The first time you log in to a new server, the Host Key Verification box appears. Click <strong>Accept and Save</strong>.</p>
+    <img src="img/132.png" alt="Bitvise SSH client Host Key Verification">
+
+    <p>6. The User Authentication box appears.  Enter the user's password on the server.</p>
+    <img src="img/133.png" alt="Bitvise SSH client User Authentication">
+
+    <p>7. If you have not already done so, install <a href="https://www.mozilla.org">Mozilla Firefox</a>, as this browser gives the finest control to the user.</p>
+
+    <p>8. From the Firefox hamburger menu, select <strong>Settings</strong>. On the <strong>General</strong> page, scroll down to where it says <strong>Network Settings</strong>, and click the <strong>Settings</strong> button.</p>
+    <ul>
+      <li>Select <strong>Manual proxy configuration</strong></li>
+      <li>Set SOCKS Host to <code>127.0.0.1</code></li>
+      <li>Set Port to <code>10808</code></li>
+      <li>Select <strong>SOCKS v5</strong></li>
+      <li>Select <strong>Proxy DNS when using SOCKS v5</strong></li>
+    </ul>
+    <img src="img/134.png" alt="Firefox Network Settings for Manual proxy configuration of a SOCKS v5 proxy server">
+
+    <p>9. After saving these settings, test your client configuration by visiting websites in Firefox.</p>
+
+  </div>
+
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "94e45ea74d58413395c468ebe6bab324"}'></script><!-- End Cloudflare Web Analytics -->
+
+</body>
+
+</html>
+
+
