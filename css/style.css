@@ -140,22 +140,22 @@ pre {
 }
 
 a:link {
-  color: #ffa147;
+  color: #168eff;
   text-decoration: none;
 }
 
 a:visited {
-  color: #ffa147;
+  color: #168eff;
   text-decoration: none;
 }
 
 a:hover {
-  color: #ffa147;
+  color: #168eff;
   text-decoration: underline;
 }
 
 a:active {
-  color: #00ffff;
+  color: #ff0000;
   text-decoration: underline;
 }
 
@@ -168,7 +168,7 @@ img {
 
 #bar {
   color: #000000;
-  background-color: #c46000;
+  background-color: #0077e6;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
 }
@@ -194,7 +194,7 @@ img {
 }
 
 #bar a:active {
-  color: #0000ff;
+  color: #ff0000;
   text-decoration: none;
 }
 
