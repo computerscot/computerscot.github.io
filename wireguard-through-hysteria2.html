@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WireGuard through Hysteria2</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="WireGuard through Hysteria2">
+  <meta property="og:description" content="Disguise your WireGuard connection as HTTP/3 using Hysteria version 2">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://computerscot.github.io/img/computerscot.png">
+  <meta property="og:url" content="https://computerscot.github.io/wireguard-through-hysteria2.html">
+</head>
+
+<body>
+  <div id="bar">
+    <div class="wrapper">
+      <p><a href="https://computerscot.github.io">computerscot.github.io</a></p>
+    </div>
+  </div>
+  <div class="wrapper">
+    <h1>WireGuard through Hysteria2</h1>
+    <p><em>September 15, 2023</em></p>
+    <p>In this post you pass a WireGuard connection through a Hysteria2 tunnel. This disguises the WireGuard connection as HTTP/3.</p>
+    <p><a href="https://github.com/apernet/hysteria">Hysteria2</a> uses a custom version of the <a href="https://en.wikipedia.org/wiki/QUIC">QUIC</a> (Quick UDP Internet Connections) protocol to deliver unparalleled performance over unreliable or lossy networks. The protocol is designed to masquerade as standard <a href="https://en.wikipedia.org/wiki/HTTP/3">HTTP/3</a> traffic, making it difficult to detect and block without widespread collateral damage. Hysteria2 is almost a complete rewrite of the original Hysteria, with a new protocol and new features. Version 2 documentation is at <a href="https://v2.hysteria.network">https://v2.hysteria.network</a>. Hysteria2 is not compatible with the original Hysteria, so users must choose either version 1 or version 2 for both client and server.</p>
+    <p><a href="https://v2.hysteria.network/zh/docs/misc/Hysteria-Brutal">Hysteria 是暴力多倍发包吗？</a></p>
+
+    <h2>Linux server</h2>
+    <p>You will need a server, a domain name, and a hostname DNS A record (or AAAA or IPv6). Our example domain name will be <code>example.com</code>, and our example hostname will be <code>vps6.example.com</code>.</p>
+    <p>Open ports <code>tcp/80</code>, <code>tcp/443</code>, and <code>udp/443</code> in the server firewall. <strong>Note that Hysteria uses UDP</strong>.</p>
+    <p>Calculate your WireGuard <code>AllowedIPs</code> for the client side using the calculator at <a href="https://www.procustodibus.com/blog/2021/03/wireguard-allowedips-calculator">https://www.procustodibus.com/blog/2021/03/wireguard-allowedips-calculator</a>. The initial value of <strong>Allowed IPs</strong> should be <code>0.0.0.0/0, ::/0</code>. The <strong>Disallowed IPs</strong> should be <code>YOUR.SERVER.IP.ADDRESS</code>. Press <strong>Calculate</strong> to get your <code>AllowedIPs</code>. You'll feed it into the script in a moment.</p>
+    <p>Update server:</p>
+    <blockquote><code>apt update && apt upgrade -y</code></blockquote>
+    <p>Install WireGuard using the script from <a href="https://github.com/angristan/wireguard-install">https://github.com/angristan/wireguard-install</a>:</p>
+    <blockquote><code>curl -O https://raw.githubusercontent.com/angristan/wireguard-install/master/wireguard-install.sh</code></blockquote>
+    <blockquote><code>chmod +x wireguard-install.sh</code></blockquote>
+    <blockquote><code>./wireguard-install.sh</code></blockquote>
+    <p>When prompted:</p>
+    <ul>
+        <li>Specify your server public IP address</li>
+        <li>Specify port <code>51820</code></li>
+        <li>Specify your calculated <code>AllowedIPs</code></li>
+    </ul>
+    <p>Example:</p>
+<pre>IPv4 or IPv6 public address: YOUR.SERVER.IP.ADDRESS
+Public interface: ens3
+WireGuard interface name: wg0
+Server WireGuard IPv4: 10.66.66.1
+Server WireGuard IPv6: fd42:42:42::1
+Server WireGuard port [1-65535]: 51820
+First DNS resolver to use for the clients: 1.1.1.1
+Second DNS resolver to use for the clients (optional): 1.0.0.1
+
+WireGuard uses a parameter called AllowedIPs to determine what is routed over the VPN.
+Allowed IPs list for generated clients (leave default to route everything): 0.0.0.0/1, 128.0.0.0/3, ... etc., ::/0
+
+Okay, that was all I needed. We are ready to setup your WireGuard server now.
+You will be able to generate a client at the end of the installation.
+Press any key to continue...</pre>
+    <p>Give your first client a name. For example:</p>
+<pre>Client name: windows
+Client WireGuard IPv4: 10.66.66.2
+Client WireGuard IPv6: fd42:42:42::2</pre>
+    <p>The script completes and informs you that your client configuration file is in <code>/root/wg0-client-windows.conf</code> (in our example).</p>
+    <p>The WireGuard install script opens port <code>udp/51820</code> in <code>iptables</code>. If you want to conceal your server, close this port by manually editing <code>/etc/wireguard/wg0.conf</code>. Remove the <code>PostUp</code> and <code>PostDown</code> lines for <code>udp/51820</code>.</p>
+	<p>Reboot the server.</p>
+    <p>Install Hysteria on the server using script provided by the Hysteria developers:</p>
+    <blockquote><code>bash <(curl -fsSL https://get.hy2.sh)</code></blockquote>
+    <p>The systemd service file is created in <code>/etc/systemd/system/hysteria-server.service</code>. Optionally set the log level by editing the file <code>/etc/systemd/system/hysteria-server.service</code>:
+    <blockquote><code>Environment=HYSTERIA_LOG_LEVEL=debug</code></blockquote>
+    <p>If you make this change, then after saving the file also do:</p>
+    <blockquote><code>systemctl daemon-reload</code></blockquote>
+    <p>Edit the server configuration file at <code>/etc/hysteria/config.yaml</code> using an editor such as <code>vi</code> or <code>nano</code>. Specify your server hostname, your email, and your password. Optionally you can also change the masquerade URL. See the <a href="https://v2.hysteria.network">Hysteria version 2 documentation</a>.</p>
+<pre># listen: :443
+
+acme:
+  domains:
+    - vps6.example.com
+  email: cscot@example.com
+
+auth:
+  type: password
+  password: JHMd94CcfsDpAYqFRW8hSNT3
+
+masquerade:
+  type: proxy
+  proxy:
+    url: https://news.ycombinator.com/
+    rewriteHost: true</pre>
+    <p>Start your Hysteria server with:</p>
+    <blockquote><code>systemctl start hysteria-server</code></blockquote>
+    <p>Configure Hysteria to start on system boot with:</p>
+    <blockquote><code>systemctl enable hysteria-server</code></blockquote>
+    <p>Check the status of the service:</p>
+    <blockquote><code>systemctl status hysteria-server</code></blockquote>
+    <p>You can view the server log at any time with:</p>
+    <blockquote><code>journalctl -u hysteria-server</code></blockquote>
+    <p>Exit SSH session with server:</p>
+    <blockquote><code>exit</code></blockquote>
+
+    <h2>Windows client</h2>
+    <p>Download the latest Hysteria for Windows from <a href="https://github.com/apernet/hysteria/releases">https://github.com/apernet/hysteria/releases</a>. The file you want for most Windows PCs will be <code>hysteria-windows-amd64.exe</code>.</p>
+    <p>Create a configuration file <code>config.yaml</code> in the same directory as <code>hysteria-windows-amd64.exe</code>. Make it match your server configuration and your other requirements. For example:</p>
+<pre>server: vps6.example.com:443 
+
+auth: JHMd94CcfsDpAYqFRW8hSNT3
+
+bandwidth: 
+  up: 10 mbps
+  down: 20 mbps
+
+socks5:
+  listen: 127.0.0.1:10808
+
+http:
+  listen: 127.0.0.1:10809
+
+udpForwarding:
+  - listen: 127.0.0.1:51820
+    remote: 127.0.0.1:51820
+    timeout: 20s</pre>
+    <p>See the <a href="https://v2.hysteria.network/docs/advanced/Full-Client-Config">Hysteria version 2 documentation</a> for details of the client configuration.</p>
+    <p>Start the program running with your configuration file by opening a Command Prompt window and changing to your <code>Downloads</code> directory. Optionally set the debug level:</p>
+    <blockquote><code>set HYSTERIA_LOG_LEVEL=debug</code></blockquote>
+    <p>Start the program with the configuration file <code>config.yaml</code>:</p>
+    <blockquote><code>.\hysteria-windows-amd64.exe</code></blockquote>
+    <p>Leave the Command Prompt window open with Hysteria running in it.</p>
+    <p>In PowerShell, securely download the generated client configuration file from the server, e.g.:</p>
+    <blockquote><code>scp root@vps6.example.com:/root/wg0-client-windows.conf Downloads</code></blockquote>
+    <p>Edit <code>Downloads\wg0-client-windows.conf</code>. Change the <code>Endpoint</code> from <code>YOUR.SERVER.IP.ADDRESS:51820</code> to be <code>127.0.0.1</code> port <code>51820</code>:</p>
+    <blockquote><code>Endpoint = 127.0.0.1:51820</code></blockquote>
+    <p>Save the file.</p>
+    <p>If you have not already done so, install the WireGuard client from <a href="https://www.wireguard.com/install">https://www.wireguard.com/install</a>.</p>
+    <p>Import the tunnel defined in your revised client configuration file <code>Downloads\wg0-client-windows.conf</code>.</p>
+    <p><strong>**Uncheck the block untunneled traffic (kill-switch) check box.**</strong></p>
+    <p>Activate the tunnel.</p>
+
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "94e45ea74d58413395c468ebe6bab324"}'></script><!-- End Cloudflare Web Analytics -->
+
+</body>
+
+</html>
+
+
