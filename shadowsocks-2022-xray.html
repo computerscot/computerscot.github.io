@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shadowsocks 2022 using Xray</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="Shadowsocks 2022 using Xray">
+  <meta property="og:description" content="Shadowsocks 2022 improves performance and includes full replay protection, addressing security issues present in the old protocol">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://computerscot.github.io/img/computerscot.png">
+  <meta property="og:url" content="https://computerscot.github.io/shadowsocks-2022-xray.html">
+</head>
+
+<body>
+  <div id="bar">
+    <div class="wrapper">
+      <p><a href="https://computerscot.github.io">computerscot.github.io</a></p>
+    </div>
+  </div>
+  <div class="wrapper">
+    <h1>Shadowsocks 2022 using Xray</h1>
+    <p><em>September 16, 2023</em></p>
+    <p>Shadowsocks 2022 improves performance and includes full replay protection, addressing security issues present in the old protocol.</p>
+
+    <h2>Server</h2>
+    <p>You need a virtual private server or VPS. Our example will use a 1 GB Ubuntu 22.04 server, where we are logged in as the `root` user.</p>
+    <p>1. Install Xray-core on your server using the latest version, and configure it to run as root:</p>
+    <blockquote><code>bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install --beta -u root</code></blockquote>
+    <p>2. Generate a random port number:</p>
+    <blockquote><code>echo $(($RANDOM + 10000))</code></blockquote>
+    <p>Our example will be <code>40687</code>.</p>
+    <p>3. Generate a preshared key. The length depends on the encryption method used:</p>
+    <table>
+    <thead>
+        <tr>
+            <th>Encryption method</th>
+            <th>Key length (bytes)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>2022-blake3-aes-128-gcm</code></td>
+            <td>16</td>
+        </tr>
+        <tr>
+            <td><code>2022-blake3-aes-256-gcm</code></td>
+            <td>32</td>
+        </tr>
+        <tr>
+            <td><code>2022-blake3-chacha20-poly1305</code></td>
+            <td>32</td>
+        </tr>
+    </tbody>
+    </table>
+    <p>This tutorial uses <code>2022-blake3-aes-128-gcm</code>, so generate a 16-byte key like this:</p>
+    <blockquote><code>openssl rand -base64 16</code></blockquote>
+    <p>Our example will be <code>xYYav0349aK0t74yGYHtfw==</code>.</p>
+    <p>4. Edit your server configuration file <code>/usr/local/etc/xray/config.json</code> based on this template:</p>
+<pre>
+{
+   "inbounds": [
+     {
+       "port": 40687,
+       "protocol": "shadowsocks",
+       "settings": {
+         "method": "2022-blake3-aes-128-gcm",
+         "password": "xYYav0349aK0t74yGYHtfw==",
+         "network": "tcp,udp"
+       }
+     }
+   ],
+    "outbounds": [
+        {
+            "protocol": "freedom",
+            "tag": "direct"
+        }
+    ]
+}
+</pre>
+    <p>5. Restart <code>xray</code> systemd service with your final configuration file:</p>
+    <blockquote><code>systemctl restart xray</code></blockquote>
+    <blockquote><code>systemctl status xray</code></blockquote>
+
+    <h2>Client</h2>
+    <p>Configure your client to match the server's inbounds. For example:</p>
+       
+  </div>
+
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "94e45ea74d58413395c468ebe6bab324"}'></script><!-- End Cloudflare Web Analytics -->
+  
+</body>
+
+</html>
