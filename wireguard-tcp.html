@@ -58,7 +58,8 @@
     <blockquote><code>cp udp2raw_amd64 /usr/local/bin/udp2raw</code></blockquote>
 
     <h3>4. Configure WireGuard to use udp2raw</h3>
-    <p>Generate a shared secret:</p>
+    <p><code>udp2raw</code> can operate in modes <code>faketcp</code>, <code>udp</code>, or <code>icmp</code>. <code>faketcp</code> is the default if no other <code>--raw-mode</code> is specified. See the <a href="https://github.com/wangyu-/udp2raw/blob/unified/README.md#usage">Usage</a> section of the README. This tutorial demonstrates <code>faketcp</code>.</p>
+    <p>Generate a preshared secret for <code>udp2raw</code>:</p>
     <blockquote><code>&lt; /dev/urandom tr -dc a-z-0-9 | head -c${1:-16};echo</code></blockquote>
     <p>Example:</p>
     <blockquote><code>dm9x7z0wbs82eiu3</code></blockquote>
