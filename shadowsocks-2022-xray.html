@@ -25,13 +25,14 @@
     <p>Shadowsocks 2022 improves performance and includes full replay protection, addressing security issues present in the old protocol.</p>
 
     <h2>Server</h2>
-    <p>You need a virtual private server or VPS. Our example will use a 1 GB Ubuntu 22.04 server, where we are logged in as the `root` user.</p>
+    <p>You need a virtual private server or VPS. Our example will use a 1 GB Ubuntu 22.04 server, where we are logged in as the <code>root</code> user.</p>
     <p>1. Install Xray-core on your server using the latest version, and configure it to run as root:</p>
     <blockquote><code>bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install --beta -u root</code></blockquote>
     <p>2. Generate a random port number:</p>
     <blockquote><code>echo $(($RANDOM + 10000))</code></blockquote>
     <p>Our example will be <code>40687</code>.</p>
-    <p>3. Generate a preshared key. The length depends on the encryption method used:</p>
+    <p>3. Since Shadowsocks defaults to transmitting TCP as TCP and UDP as UDP, open ports <code>tcp/40687</code> and <code>udp/40687</code> (using <code>40687</code> as our example) in your server's firewall.</p>
+    <p>4. Generate a preshared key. The length depends on the encryption method used:</p>
     <table>
     <thead>
         <tr>
@@ -57,7 +58,7 @@
     <p>This tutorial uses <code>2022-blake3-aes-128-gcm</code>, so generate a 16-byte key like this:</p>
     <blockquote><code>openssl rand -base64 16</code></blockquote>
     <p>Our example will be <code>xYYav0349aK0t74yGYHtfw==</code>.</p>
-    <p>4. Edit your server configuration file <code>/usr/local/etc/xray/config.json</code> based on this template:</p>
+    <p>5. Edit your server configuration file <code>/usr/local/etc/xray/config.json</code> based on this template:</p>
 <pre>
 {
    "inbounds": [
@@ -79,7 +80,7 @@
     ]
 }
 </pre>
-    <p>5. Restart <code>xray</code> systemd service with your final configuration file:</p>
+    <p>6. Restart <code>xray</code> systemd service with your final configuration file:</p>
     <blockquote><code>systemctl restart xray</code></blockquote>
     <blockquote><code>systemctl status xray</code></blockquote>
 
