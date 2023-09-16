@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WireGuard through WebSocket Tunnel</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="WireGuard through WebSocket Tunnel">
+  <meta property="og:description" content="Wstunnel uses the WebSocket protocol, which is compatible with HTTP, in order to bypass firewalls and proxies">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://computerscot.github.io/img/computerscot.png">
+  <meta property="og:url" content="https://computerscot.github.io/wireguard-through-wstunnel.html">
+</head>
+
+<body>
+  <div id="bar">
+    <div class="wrapper">
+      <p><a href="https://computerscot.github.io">computerscot.github.io</a></p>
+    </div>
+  </div>
+  <div class="wrapper">
+    <h1>WireGuard through WebSocket Tunnel</h1>
+    <p><em>September 16, 2023</em></p>
+    <p>Here is a way to use WireGuard while overcoming network restrictions that detect the WireGuard UDP protocol. <code>wstunnel</code> uses the WebSocket protocol, which is compatible with HTTP, in order to bypass firewalls and proxies.</p>
+    <p>References:</p>
+    <ul>
+      <li><a href="https://github.com/erebe/wstunnel">https://github.com/erebe/wstunnel</a></li>
+      <li><a href="https://kirill888.github.io/notes/wireguard-via-websocket">https://kirill888.github.io/notes/wireguard-via-websocket</a></li>
+      <li><a href="https://nerdonthestreet.com/wiki?find=Set+Up+a+WireGuard+VPN+Server+with+WebSocket+Tunneling">https://nerdonthestreet.com/wiki?find=Set+Up+a+WireGuard+VPN+Server+with+WebSocket+Tunneling</a></li>
+    </ul>
+
+    <h2>Linux Server</h2>
+    <p>You will need a server and a domain name. Our example hostname will be <code>vps7.example.com</code>.</p>
+    <p>1. Calculate your WireGuard <code>AllowedIPs</code> for the client side using the calculator at <a href="https://www.procustodibus.com/blog/2021/03/wireguard-allowedips-calculator">https://www.procustodibus.com/blog/2021/03/wireguard-allowedips-calculator</a>. The initial value of <strong>Allowed IPs</strong> should be <code>0.0.0.0/0, ::/0</code>. The <strong>Disallowed IPs</strong> should be <code>YOUR.SERVER.IP.ADDRESS</code>. Press <strong>Calculate</strong> to get your <code>AllowedIPs</code>. You'll feed that line into the WireGuard install script in a moment.</p>
+    <p>2. Open port <code>tcp/443</code> on your server's firewall.</p>
+    <p>3. Update your server's existing software packages:</p>
+    <blockquote><code>apt update && apt upgrade -y</code></blockquote>
+    <p>4. Install WireGuard using the script from <a href="https://github.com/angristan/wireguard-install">https://github.com/angristan/wireguard-install</a>. When prompted, specify your server public IP address, port <code>51820</code>, your calculated <code>AllowedIPs</code>, and at the end give your first client a name, e.g. <code>windows</code>.</p>
+    <blockquote><code>curl -O https://raw.githubusercontent.com/angristan/wireguard-install/master/wireguard-install.sh</code></blockquote>
+    <blockquote><code>chmod +x wireguard-install.sh</code></blockquote>
+    <blockquote><code>./wireguard-install.sh</code></blockquote>
+    <p>5. Edit <code>/etc/wireguard/wg0.conf</code>, and reduce the <code>[Interface]</code> MTU to <code>1300</code>:</p>
+    <blockquote><code>MTU = 1300</code></blockquote>
+    <p>6. Restart WireGuard with your revised <code>/etc/wireguard/wg0.conf</code>:</p>
+    <blockquote><code>systemctl restart wg-quick@wg0</code></blockquote>
+    <p>7. Download the <code>wstunnel</code> executable:</p>
+    <blockquote><code>wget https://github.com/erebe/wstunnel/releases/download/v5.1/wstunnel-linux-x64</code></blockquote>
+    <p>8. Copy <code>wstunnel</code> into your execution path:</p>
+    <blockquote><code>cp wstunnel-linux-x64 /usr/local/bin/wstunnel</code></blockquote>   
+    <p>9. Make it executable:</p>
+    <blockquote><code>chmod +x /usr/local/bin/wstunnel</code></blockquote>
+    <p>10. Allow <code>wstunnel</code> to bind to privilged ports:</p>
+    <blockquote><code>setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/wstunnel</code></blockquote>
+    <p>11. Create the systemd service unit file <code>/etc/systemd/system/wstunnel.service</code> like this. 
+This will listen for a TLS connection on port 443 and forward packets to the WireGuard port on localhost.</p>
+<pre>[Unit]
+Description=WebSocket Tunnel
+After=network.target
+
+[Service]
+Type=simple
+User=nobody
+ExecStart=/usr/local/bin/wstunnel -v --server wss://0.0.0.0:443 --restrictTo=127.0.0.1:51820
+Restart=no
+
+[Install]
+WantedBy=multi-user.target</pre>
+    <p>12. Start <code>wstunnel</code> on reboot and also start it now:</p>
+    <blockquote><code>systemctl enable --now wstunnel</code></blockquote>
+
+    <h2>Windows client</h2>
+    <p>1. Download the latest Windows client, <a href="https://github.com/erebe/wstunnel/releases/download/v5.0/wstunnel-windows-x64.zip">https://github.com/erebe/wstunnel/releases/download/v5.0/wstunnel-windows-x64.zip</a> or a more recent one if there is one.</p>
+    <p>2. Unzip the <code>.zip</code> file.</p>
+    <p>3. Open a Command Prompt window. Change into the <code>Downloads\wstunnel-windows-x64</code> directory. The next command will listen on port <code>51820</code> on localhost and forward these packets to port <code>51280</code> on <code>vps7.example.com</code>.</p>
+    <blockquote><code>.\wstunnel.exe -v --udp --udpTimeoutSec -1 -L 127.0.0.1:51820:127.0.0.1:51820 wss://vps7.example.com</code></blockquote>
+    <p>4. Leave the Command Prompt window open with <code>wstunnel</code> running in it and waiting for UDP datagrams on localhost port <code>51820</code>.</p>
+    <p>5. Open PowerShell, and securely download the generated client configuration file from the server, e.g.:</p>
+    <blockquote><code>scp root@vps7.example.com:/root/wg0-client-windows.conf Downloads</code></blockquote>
+    <p>6. Edit <code>Downloads\wg0-client-windows.conf</code>. Change the <code>[Peer]</code> <code>Endpoint</code> from <code>YOUR.SERVER.IP.ADDRESS:51820</code> to be <code>127.0.0.1</code> port <code>51820</code>:</p>
+    <blockquote><code>Endpoint = 127.0.0.1:51820</code></blockquote>
+    <p>7. Reduce the <code>[Interface]</code> <code>MTU</code> from <code>1420</code> (the default) to <code>1300</code>:</p>
+    <blockquote><code>MTU = 1300</code></blockquote>
+    <p>8. If you have not already done so, install the WireGuard client from <a href="https://www.wireguard.com/install">https://www.wireguard.com/install</a>.</p>
+    <p>9. Import the tunnel defined in your revised client configuration file <code>Downloads\wg0-client-windows.conf</code>.</p>
+    <p>10. Press <strong>Edit</strong> and uncheck the checkbox to block untunneled traffic (kill-switch).</p>
+    <p>11. Activate the tunnel.</p>
+
+    <h2>macOS client</h2>
+    <p>1. Get your <code>wstunnel</code> from <a href="https://github.com/erebe/wstunnel/releases/download/v5.0/wstunnel-macos.zip">https://github.com/erebe/wstunnel/releases/download/v5.0/wstunnel-macos.zip</a>.</p>
+    <p>2. Get your WireGuard client from the App Store (link at <a href="https://www.wireguard.com/install">https://www.wireguard.com/install</a>).</p>
+    <p>3. Apart from that, it should be similar to the Windows client. The reference <a href="https://kirill888.github.io/notes/wireguard-via-websocket">https://kirill888.github.io/notes/wireguard-via-websocket</a> refers to macOS clients.</p>
+
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "94e45ea74d58413395c468ebe6bab324"}'></script><!-- End Cloudflare Web Analytics -->
+
+</body>
+
+</html>
+
+
