@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WireGuard + obfuscated UDP using udp2raw</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="WireGuard + obfuscated UDP using udp2raw">
+  <meta property="og:description" content="How to obfuscate WireGuard UDP packets with udp2raw">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://computerscot.github.io/img/computerscot.png">
+  <meta property="og:url" content="https://computerscot.github.io/wireguard-obfuscated-udp.html.html">
+</head>
+
+<body>
+  <div id="bar">
+    <div class="wrapper">
+      <p><a href="https://computerscot.github.io">computerscot.github.io</a></p>
+    </div>
+  </div>
+  <div class="wrapper">
+    <h1>WireGuard + obfuscated UDP using udp2raw</h1>
+    <p><em>September 17, 2023</em></p>
+    <p>This tutorial shows you how to obfuscate WireGuard UDP packets with <code>udp2raw</code>.</p>
+  
+    <h2>Linux server</h2>
+    <p>The examples assume that you are using Ubuntu 22.04 and that you logged in as the <code>root</code> user.</p>
+
+    <p>1. Choose a port on which the server will accept input. Choose something other than <code>51820</code>.</p>
+    <blockquote><code>echo $(($RANDOM + 10000))</code></blockquote>
+    <p>Our example will be <code>30199</code>.</p>
+  
+    <p>2. Open this port (<code>udp/30199</code> in our example) for UDP input in your server firewall. To keep your server hidden, the WireGuard default port (<code>udp/51820</code>) should be kept closed.</p>
+
+    <p>3. Update your server.</p>
+    <blockquote><code>apt update && apt upgrade -y</code></blockquote>
+
+    <p>4. Open a browser. Visit <a href="https://www.procustodibus.com/blog/2021/03/wireguard-allowedips-calculator">https://www.procustodibus.com/blog/2021/03/wireguard-allowedips-calculator</a>.</p>
+    <ul>
+      <li>Set Allowed IPs to <code>0.0.0.0/0,::/0</code>.</li>
+      <li>Set Disallowed IPs to <code>YOUR.SERVER.IP.ADDRESS</code>.</li>
+      <li>Press <strong>Calculate</strong>.</li>
+      <li>You'll use the result in the next step.</li>
+    </ul>
+
+    <p>5. Install WireGuard. When you are asked for the IP address, enter the public IP address of your server. When you are asked for a port number, use <code>51820</code>. When you are asked for Allowed IPs, enter the calculated line. When you are asked for a name for the first client, enter (for example) <code>windows</code>.</p>
+    <blockquote><code>curl -O https://raw.githubusercontent.com/angristan/wireguard-install/master/wireguard-install.sh</code></blockquote>
+    <blockquote><code>chmod +x wireguard-install.sh</code></blockquote>
+    <blockquote><code>./wireguard-install.sh</code></blockquote>
+
+    <p>6. Visit <a href="https://github.com/wangyu-/udp2raw/releases">https://github.com/wangyu-/udp2raw/releases</a> to determine the latest release of <code>udp2raw</code>.</p>
+
+    <p>7. Install the latest release of <code>udp2raw</code>:</p>
+    <blockquote><code>wget https://github.com/wangyu-/udp2raw/releases/download/20230206.0/udp2raw_binaries.tar.gz</code></blockquote>
+    <blockquote><code>tar -xf udp2raw_binaries.tar.gz</code></blockquote>
+    <blockquote><code>cp udp2raw_amd64 /usr/local/bin/udp2raw</code></blockquote>
+
+    <p>8. Generate a preshared secret for <code>udp2raw</code>:</p>
+    <blockquote><code>&lt; /dev/urandom tr -dc a-z-0-9 | head -c${1:-16};echo</code></blockquote>
+    <p>Example:</p>
+    <blockquote><code>056y9ohbg6ms0m2t</code></blockquote>
+
+    <p>9. Configure WireGuard to use <code>udp2raw</code>. Edit <code>/etc/wireguard/wg0.conf</code>. Add the following settings to the <code>[Interface]</code> section of <code>/etc/wireguard/wg0.conf</code>:</p>
+<pre>MTU = 1300
+PreUp = udp2raw -s --raw-mode udp -l 0.0.0.0:30199 -r 127.0.0.1:51820 -k "056y9ohbg6ms0m2t" -a >/var/log/udp2raw.log 2>&1 &
+PostDown = killall udp2raw || true</pre>
+
+    <p>10. Restart WireGuard with the revised configuration:</p>
+    <blockquote><code>systemctl restart wg-quick@wg0</code></blockquote>
+
+    <p>11. This is the end of the server work for now. <code>udp2raw</code> is listening on <code>udp/30199</code>. Behind <code>udp2raw</code>, WireGuard is listening on <code>udp/51820</code> (which need not be open in your server firewall). Exit your SSH session with the server:</p>
+    <blockquote><code>exit</code></blockquote>
+
+    <h2>Windows client</h2>
+    <p>Our client in this tutorial runs Windows.</p>
+
+    <p>1. Install the WireGuard for Windows client from <a href="https://www.wireguard.com/install">https://www.wireguard.com/install</a>. For Windows you get an installer named <code>wireguard-installer.exe</code>, which you must run to install the Windows WireGuard GUI client. Initially there are no tunnels defined to the GUI client.</p>
+
+    <p>2. Download the WireGuard client configuration file that you generated on the server. Open PowerShell. Replace <code>YOUR.SERVER.IP.ADDRESS</code> by your server IP address:</p>
+    <blockquote><code>scp root@YOUR.SERVER.IP.ADDRESS:wg0-client-windows.conf Downloads</code></blockquote>
+
+    <p>3. Visit <a href="https://github.com/wangyu-/udp2raw-multiplatform/releases">https://github.com/wangyu-/udp2raw-multiplatform/releases</a> to determine the latest release of <code>udp2raw</code>. Download the most recent <code>udp2raw_mp_binaries.tar.gz</code>. Use <a href="https://www.7-zip.org">7-Zip</a> to extract <code>udp2raw_mp_binaries.tar</code>. Extract the folder <code>udp2raw_mp_binaries</code>. To make it easier to find, copy <code>udp2raw_mp.exe</code> up to your main <code>Downloads</code> folder.</p>
+
+    <p>4. Open a new Command Prompt window. Issue the commands:</p>
+    <blockquote><code>cd Downloads</code></blockquote>
+    <blockquote><code>.\udp2raw_mp.exe -c --raw-mode udp -l 127.0.0.1:51820 -r YOUR.SERVER.IP.ADDRESS:30199 -k "056y9ohbg6ms0m2t"</code></blockquote>
+
+    <p>5. Make some finals change to the generated client configuration. The WireGuard client must think it is talking to a server on localhost, which in fact is where <code>udp2raw</code> is listening.</p>
+    <blockquote><code>Endpoint = 127.0.0.1:51820</code></blockquote>
+
+    <p>6. Also add a line to the <code>[Interface]</code> section:</p>
+    <blockquote><code>MTU = 1300</code></blockquote>
+
+    <p>7. Now import the amended tunnel configuration into your WireGuard GUI client.</p>
+
+    <p>8. Press <strong>Edit</strong> and manually uncheck the box that blocks untunneled traffic (kill-switch).</p>
+
+    <p>9. In the WireGuard GUI client, <strong>Activate</strong> the tunnel.</p>
+
+    <p>10. Open a browser and test your connection.</p>
+
+  </div>
+
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "94e45ea74d58413395c468ebe6bab324"}'></script><!-- End Cloudflare Web Analytics -->
+  
+</body>
+
+</html>
+
+
