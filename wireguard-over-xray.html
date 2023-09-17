@@ -21,7 +21,7 @@
   </div>
   <div class="wrapper">
     <h1>WireGuard over Xray</h1>
-    <p><em>July 23, 2023</em></p>
+    <p><em>September 17, 2023</em></p>
     <p>The scenario is that you want to connect to a WireGuard server at a remote location, but your WireGuard packets are being detected and blocked by a firewall. Therefore you decide to pass your WireGuard packets through an Xray tunnel. This is only possible on desktop platforms (Linux, macOS, or Windows), not on mobile devices.</p>
     <p>The server IP address is given in the examples as:</p>
     <blockquote><code>YOUR.SERVER.IP.ADDRESS</code></blockquote>
@@ -32,7 +32,12 @@
     <blockquote><code>chmod +x wireguard-install.sh</code></blockquote>
     <blockquote><code>./wireguard-install.sh</code></blockquote>
     <p>When prompted by the script, choose a port number of <code>51820</code>. Note that this port does not need to be open in your server firewall, as traffic will come through Xray before it gets to WireGuard.</p>
-    <p>Securely download the client configuration file that the script generates.</p>
+    <p>Edit <code>/etc/wireguard/wg0.conf</code>, and reduce the <code>[Interface]</code> MTU to 1300:</p>
+    <blockquote><code>MTU = 1300</code></blockquote>
+    <p>Restart WireGuard with your revised <code>/etc/wireguard/wg0.conf</code>:</p>
+    <blockquote><code>systemctl restart wg-quick@wg0</code></blockquote>
+    <p>Securely download to the client the client configuration file that the script has generated. For example:</p>
+    <blockquote><code>scp root@YOUR.SERVER.IP.ADDRESS:/root/wg0-client-windows.conf Downloads</code></blockquote>
 
     <h2>Xray server</h2>
     <p>Open port <code>tcp/443</code> for input on the server.</p>
@@ -160,7 +165,9 @@
     </ol>
 
     <h2>WireGuard client</h2>
-    <p>WireGuard clients are available for most platforms from <a href="https://www.wireguard.com/install">https://www.wireguard.com/install</a>. GUI clients are available for Windows and macOS. For Linux you must install from the command line:</p>
+
+    <h3>WireGuard client -- Linux</h3>
+    <p>For Linux you must install the WireGuard client from the command line:</p>
     <blockquote><code>sudo apt install -y resolvconf wireguard</code></blockquote>
     <p>Make one last change to the generated client configuration. The WireGuard client must think it is talking to a server on localhost, which in fact is where the Xray <code>dokodemo-door</code> is listening.</p>
     <blockquote><code>Endpoint = 127.0.0.1:51820</code></blockquote>
@@ -170,6 +177,20 @@
     <blockquote><code>sudo wg-quick up wg0</code></blockquote>
     <img src="img/083.png" alt="WireGuard client running on Ubuntu Linux">
     <p>You should now have an end-to-end connection through the Xray tunnel.</p>
+
+    <h3>WireGuard client -- Windows</h3>
+    <p>The WireGuard for Windows GUI client is available from <a href="https://www.wireguard.com/install">https://www.wireguard.com/install</a>.</p>
+    <p>Edit the downloaded client configuration file. Change the <code>[Peer]</code> <code>Endpoint</code> from <code>YOUR.SERVER.IP.ADDRESS:51820</code> to <code>127.0.0.1</code> port <code>51820</code>:</p>
+    <blockquote><code>Endpoint = 127.0.0.1:51820</code></blockquote>
+    <p>Reduce the <code>[Interface]</code> MTU from 1420 (the default) to 1300:
+    <blockquote><code>MTU = 1300</code></blockquote>
+    <p>Import into the WireGuard GUI the tunnel defined in your revised client configuration file.</p>
+    <p>Press <strong>Edit</strong> and uncheck the checkbox to block untunneled traffic (kill-switch).</p>
+    <p>Activate the tunnel.</p>
+
+    <h3>WireGuard client -- macOS</h3>
+    <p>A link to the App Store page for the macOS WireGuard client is given at <a href="https://www.wireguard.com/install">https://www.wireguard.com/install</a>.</p>
+    <p>Make corresponding changes on macOS to the ones you made for Windows.</p>
     
   </div>
 
