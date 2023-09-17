@@ -62,9 +62,9 @@
     <blockquote><code>056y9ohbg6ms0m2t</code></blockquote>
 
     <p>9. Configure WireGuard to use <code>udp2raw</code>. Edit <code>/etc/wireguard/wg0.conf</code>. Add the following settings to the <code>[Interface]</code> section of <code>/etc/wireguard/wg0.conf</code>:</p>
-<pre>MTU = 1300
-PreUp = udp2raw -s --raw-mode udp -l 0.0.0.0:30199 -r 127.0.0.1:51820 -k "056y9ohbg6ms0m2t" -a >/var/log/udp2raw.log 2>&1 &
-PostDown = killall udp2raw || true</pre>
+    <blockquote><code>MTU = 1300</code></blockquote>
+    <blockquote><code>PreUp = udp2raw -s --raw-mode udp -l 0.0.0.0:30199 -r 127.0.0.1:51820 -k "056y9ohbg6ms0m2t" -a >/var/log/udp2raw.log 2>&1 &</code></blockquote>
+    <blockquote><code>PostDown = killall udp2raw || true</code></blockquote>
 
     <p>10. Restart WireGuard with the revised configuration:</p>
     <blockquote><code>systemctl restart wg-quick@wg0</code></blockquote>
@@ -86,7 +86,7 @@ PostDown = killall udp2raw || true</pre>
     <blockquote><code>cd Downloads</code></blockquote>
     <blockquote><code>.\udp2raw_mp.exe -c --raw-mode udp -l 127.0.0.1:51820 -r YOUR.SERVER.IP.ADDRESS:30199 -k "056y9ohbg6ms0m2t"</code></blockquote>
 
-    <p>5. Make some finals change to the generated client configuration. The WireGuard client must think it is talking to a server on localhost, which in fact is where <code>udp2raw</code> is listening.</p>
+    <p>5. Make some final changes to the generated client configuration. The WireGuard client must think it is talking to a server on localhost, which in fact is where <code>udp2raw</code> is listening.</p>
     <blockquote><code>Endpoint = 127.0.0.1:51820</code></blockquote>
 
     <p>6. Also add a line to the <code>[Interface]</code> section:</p>
