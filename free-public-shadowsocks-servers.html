@@ -27,11 +27,11 @@
     <p>One thing that puts people off from providing free Shadowsocks servers is that you are effectively acting as an exit node. Whatever anyone does on your server can be blamed on you.</p>
     <p>The architecture in this post addresses this problem. It makes it safer for anyone to offer free public-interest Shadowsocks servers.</p>
 <pre>
-+-------------+        +--------+--------+
-| SS          |        | SS     | Tor    |
-| Client      +------->+ Server + Client +------> TOR
-|             |        |        |        |
-+-------------+        +--------+--------+
++----------+        +--------+--------+
+| SS       |        | SS     | Tor    |
+| Client   +------->+ Server + Client +------> TOR
+|          |        |        |        |
++----------+        +--------+--------+
 </pre>
     <p>The free server accepts SS traffic, but forces it into the Tor network. The risk is shunted to the knowledgeable and well-resourced organizations who host Tor exit nodes.</p>
     <p>Also, since Tor will be slower than a commercial VPN, your server will not be exploited by cheap people who want a VPN but want someone else to pay for it.</p>
@@ -96,7 +96,7 @@
 systemctl restart xray && systemctl status xray</code></blockquote>
     <h2>Communicate Shadowsocks Parameters to Clients</h2>
     <p>Supply the server IP address, port, password, and encryption method to the public. You can also supply them as a URL-style <code>ss://</code> link or as a QR code. Most SS clients can import server parameters from a URL or on-screen QR code.</p>
-    <p>Note: Anyone with the password and the ability to eavesdrop on network traffic could decrypt communications. Therefore only use these servers for HTTPS sites, where it does not matter if the domain name is exposed. The data itself will be protected by HTTPS.</p>
+    <p>Note: An adversary with the password and the ability to eavesdrop on network traffic could decrypt communications. Therefore only use these servers for HTTPS sites and if it does not matter if the domain name is exposed. The pages visited and the data itself is protected by HTTPS.</p>
 
   </div>
 
