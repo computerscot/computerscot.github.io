@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Free Public-Interest Shadowsocks Servers</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="Free Public-Interest Shadowsocks Servers">
+  <meta property="og:description" content="The architecture in this post safer for anyone to offer free public-interest Shadowsocks servers">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://computerscot.github.io/img/computerscot.png">
+  <meta property="og:url" content="https://computerscot.github.io/free-public-shadowsocks-servers.html">
+</head>
+
+<body>
+  <div id="bar">
+    <div class="wrapper">
+      <p><a href="https://computerscot.github.io">computerscot.github.io</a></p>
+    </div>
+  </div>
+  <div class="wrapper">
+    <h1>Free Public-Interest Shadowsocks Servers</h1>
+    <p><em>September 22, 2023</em></p>
+    <p>Some people need a quick and free way to access a Shadowsocks server.</p>
+    <p>At the same time, other people are willing to provide free Shadowsocks servers, if they are in the public interest.</p>
+    <p>One thing that puts people off from providing free Shadowsocks servers is that you are effectively acting as an exit node. Whatever anyone does on your server can be blamed on you.</p>
+    <p>The architecture in this post addresses this problem. It makes it safer for anyone to offer free public-interest Shadowsocks servers.</p>
+<pre>
++-------------+        +--------+--------+
+| SS          |        | SS     | Tor    |
+| Client      +------->+ Server + Client +------> TOR NETWORK
+|             |        |        |        |
++-------------+        +--------+--------+
+</pre>
+    <p>The free server accepts SS traffic, but forces it into the Tor network. The risk is shunted to the knowledgeable and well-resourced organizations who host Tor exit nodes.</p>
+    <p>Also, since Tor will be slower than a commercial VPN, your server will not be exploited by cheap people who want a VPN but want someone else to pay for it.</p>
+    <p>Here is how to set up such a server.</p>
+
+    <h2>Set Up Tor Client on Server</h2>
+    <p>Install the prerequisite package to access the Tor repositories:</p>
+    <blockquote><code>apt install -y apt-transport-https</code></blockquote>
+    <p>Create <code>/etc/apt/sources.list.d/tor.list</code> like the example below (the distribution here is Ubuntu 22.04, which is why the distribution is <code>jammy</code>):</p>
+    <blockquote><code>deb [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org jammy main</code></blockquote>
+    <blockquote><code>deb-src [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org jammy main</code></blockquote>
+    <p>Get the Tor signing key:</p>
+    <blockquote><code>wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor | tee /usr/share/keyrings/tor-archive-keyring.gpg >/dev/null</code></blockquote>
+    <p>Install Tor:</p>
+    <blockquote><code>apt update && apt install -y tor deb.torproject.org-keyring</code></blockquote>
+    <p>By default, Tor listens for SOCKS traffic on port <code>9050</code>:</p>
+    <blockquote><code>systemctl status tor@default</code></blockquote>
+    <blockquote><code>ss -tulpn | grep 9050</code></blockquote>
+
+    <h2>Set Up Shadowsocks Server</h2>
+    <p>Choose a port:</p>
+    <blockquote><code>echo $((1024 + $RANDOM))</code></blockquote>
+    <p>Choose a password:</p>
+    <blockquote><code>< /dev/urandom tr -dc A-Z-a-z-0-9 | head -c${1:-24};echo;</code></blockquote>
+    <p>Install the latest version of Xray to host your SS server:</p>
+    <blockquote><code>bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install --beta -u root</code></blockquote>
+    <p>Edit the Xray configuration file <code>/usr/local/etc/xray/config.json</code>. Make it look like this. Note that Tor handles TCP only, and therefore the SS input must also be TCP only. (Firefox has a feature to send DNS queries through a SOCKS tunnel.)</p>
+<pre>
+{
+    "inbounds": [
+        {
+            "port": <PORT-NUMBER>,
+            "protocol": "shadowsocks",
+            "settings": {
+                "clients": [
+                    {
+                        "password": "<PASSWORD>",
+                        "method": "chacha20-poly1305"
+                    }
+                ],
+                "network": "tcp"
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "socks",
+            "settings": {
+                "servers": [
+                    {
+                        "address": "127.0.0.1",
+                        "port": 9050
+                    }
+                ]
+             }
+        }
+    ]
+}
+</pre>
+    <p>Restart Xray with your configuration:</p>
+    <blockquote><code>
+systemctl restart xray && systemctl status xray</code></blockquote>
+    <h2>Communicate Shadowsocks Parameters to Clients</h2>
+    <p>Supply the server IP address, port, password, and encryption method to the public. You can also supply them as a URL-style <code>ss://</code> link or as a QR code. Most SS clients can import server parameters from a URL or on-screen QR code.</p>
+    <p>Note: Anyone with the password and the ability to eavesdrop on network traffic could decrypt communications. Therefore only use these servers for HTTPS sites, where it does not matter if the domain name is exposed. The data itself will be protected by HTTPS.</p>
+
+  </div>
+
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "94e45ea74d58413395c468ebe6bab324"}'></script><!-- End Cloudflare Web Analytics -->
+  
+</body>
+
+</html>
