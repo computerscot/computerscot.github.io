@@ -35,7 +35,8 @@
 </pre>
     <p>The free server accepts SS traffic, but forces it into the Tor network. The risk is shunted to the knowledgeable and well-resourced organizations who host Tor exit nodes.</p>
     <p>Also, since Tor will be slower than a commercial VPN, your server will not be exploited by cheap people who want a VPN but want someone else to pay for it.</p>
-    <p>Here is how to set up such a server.</p>
+   <p>Note that an adversary with both the password and the ability to eavesdrop on network traffic could decrypt the outer layer of encryption. Therefore only use these servers for HTTPS sites and in situations were it does not matter if the Server Name Indicator might be decrypted. The pages visited and the data itself will still be protected by HTTPS.</p>
+    <p>Here is how to set up the server.</p>
 
     <h2>Set Up Tor Client on Server</h2>
     <p>Install the prerequisite package to access the Tor repositories:</p>
@@ -95,8 +96,12 @@
     <blockquote><code>
 systemctl restart xray && systemctl status xray</code></blockquote>
     <h2>Communicate Shadowsocks Parameters to Clients</h2>
-    <p>Supply the server IP address, port, password, and encryption method to the public. You can also supply them as a URL-style <code>ss://</code> link or as a QR code. Most SS clients can import server parameters from a URL or on-screen QR code.</p>
-    <p>Note: An adversary with the password and the ability to eavesdrop on network traffic could decrypt communications. Therefore only use these servers for HTTPS sites and if it does not matter if the domain name is exposed. The pages visited and the data itself are protected by HTTPS.</p>
+    <p>Supply the server IP address, port, password, and encryption method to the public. You can also supply them as a URI-style <code>ss://</code> link or as a QR code. Most SS clients can import server parameters from a URL or on-screen QR code.</p>
+    <p>The original Shadowsocks URI-style ss:// consisted of:</p>
+    <blockquote><code>ss://base64-encode(method:password@hostname:port)#remark</code></blockquote>
+    <p>Shadowsocks Improvement Proposal <a href="https://shadowsocks.org/doc/sip002.html"></a> purposed a new URI scheme, following <a href="https://www.ietf.org/rfc/rfc3986.txt">RFC3986</a>, which looks like this:</p>
+    <blockquote><code>ss://websafe-base64-encode-utf8(method:password)@hostname:port#remark</code></blockquote>
+    <p>Some people use the original style, some people use the new style of <code>ss://</code> URIs.</p>
 
   </div>
 
