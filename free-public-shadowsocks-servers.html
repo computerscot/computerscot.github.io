@@ -95,6 +95,7 @@
     <p>Restart Xray with your configuration:</p>
     <blockquote><code>
 systemctl restart xray && systemctl status xray</code></blockquote>
+
     <h2>Communicate Shadowsocks Parameters to Clients</h2>
     <p>Supply the server IP address, port, password, and encryption method to the public. You can also supply them as a URI-style <code>ss://</code> link or as a QR code. Most SS clients can import server parameters from a URI or on-screen QR code.</p>
     <p>The original Shadowsocks URI-style ss:// consisted of:</p>
@@ -102,6 +103,61 @@ systemctl restart xray && systemctl status xray</code></blockquote>
     <p>Shadowsocks Improvement Proposal <a href="https://shadowsocks.org/doc/sip002.html">SIP002</a> purposed a new URI scheme, following <a href="https://www.ietf.org/rfc/rfc3986.txt">RFC3986</a>, which looks like this:</p>
     <blockquote><code>ss://websafe-base64-encode-utf8(method:password)@hostname:port#remark</code></blockquote>
     <p>Some people use the original style, some people use the new style of <code>ss://</code> URIs.</p>
+
+    <h2>Install Shadowsocks for Windows Client</h2>
+    <p>Open a browser and visit <a href="https://github.com/shadowsocks/shadowsocks-windows">https://github.com/shadowsocks/shadowsocks-windows</a>, the C# port of Shadowsocks.</p>
+    <img src="/img/208.png" alt="GitHub repository for Shadowsocks for Windows">
+    <p>Scroll down and click <strong>Releases</strong> in the sidebar.<p>
+    <img src="/img/209.png" alt="Releases link on GitHub page for Shadowsocks for Windows">
+    <p>The topmost release will be the most recent.<p>
+    <img src="/img/210.png" alt="Shadowsocks for Windows most recent release">
+    <p>Scroll down to the <strong>Assets</strong> section, and download the <code>.zip</code> file.<p>
+    <img src="/img/211.png" alt="Shadowsocks for Windows zip file on GitHub">
+    <p>The <code>.zip</code> file is saved to your <code>Downloads</code> folder.<p>
+    <img src="/img/212.png" alt="Shadowsocks for Windows zip file downloaded to PC">
+    <p>Right-click on the <code>.zip</code> file, and select <strong>Extract All...</strong>.<p>
+    <img src="/img/213.png" alt="Context menu to extract Shadowsocks for Windows zip file">
+    <p>In the extracted folder, click <code>Shadowsocks.exe</code> to launch the application.<p>
+    <img src="/img/214.png" alt="Shadowsocks for Windows application exe file in extracted folder">
+
+    <h2>Install v2rayN for Windows Client</h2>
+    <p>You can also connect to Shadowsocks servers from the v2rayN client.</p>
+    <p>Open a browser and visit <a href="https://github.com/2dust/v2rayn">https://github.com/2dust/v2rayn</a>, a GUI client supporting Xray, V2Ray, Shadowsocks, and other protocols.</p>
+    <img src="/img/183.png" alt="GitHub repository for v2rayN by 2dust">
+    <p>Scroll down and click <strong>Releases</strong> in the sidebar.<p>
+    <img src="/img/184.png" alt="Releases link on GitHub page for v2rayN">
+    <p>The topmost release will be the most recent.<p>
+    <img src="/img/185.png" alt="v2rayN most recent release">
+    <p>Scroll down to the <strong>Assets</strong> section, and expand the list of <strong>Assets</strong>.<p>
+    <img src="/img/187.png" alt="v2rayN Assets for the release">
+    <p>Download <code>v2rayN-With-Core.zip</code>.<p>
+    <img src="/img/188.png" alt="v2rayN-With-Core.zip">
+    <p>The <code>.zip</code> file is saved to your <code>Downloads</code> folder.<p>
+    <img src="/img/189.png" alt="v2rayN zip file downloaded to PC">
+    <p>Right-click on the <code>.zip</code> file, and select <strong>Extract All...</strong>.<p>
+    <img src="/img/190.png" alt="Context menu to extract v2rayN zip file">
+    <p>The inner folder is extracted.<p>
+    <img src="/img/191.png" alt="v2rayN with Core inner folder">
+    <p>In the extracted folder, click <code>v2rayN.exe</code> to launch the application.<p>
+    <img src="/img/193.png" alt="v2rayN application exe file in extracted folder">
+    <p>Click the up-arrow at the bottom right of your Windows desktop to bring up the icons in the system tray.<p>
+    <img src="/img/195.png" alt="Accessing system tray icons in Windows">
+    <p>Click the v2rayN icon to bring up the GUI panel.<p>
+    <img src="/img/196.png" alt="v2rayN icon in Windows system tray">
+    <p>If you want to change the interface language, click the three dots button in the menu.<p>
+    <img src="/img/200.png" alt="v2rayN GUI panel initial appears and three dots button">
+    <p>You can choose between Simplified Chinese, Traditional Chinese, English, Farsi, and Russian.<p>
+    <img src="/img/202.png" alt="Changing the v2rayN language">
+    <p>Now right-click on the v2rayN icon in the system tray, and select the bottom-most option to exit v2rayN.</p>
+    <img src="/img/203.png" alt="Exit v2rayN using context menu in Windows system tray">
+    <p>Go back to the extracted folder, and click <code>v2rayN.exe</code> gain to re-launch the application.<p>
+    <img src="/img/204.png" alt="v2rayN application exe file in extracted folder">
+    <p>Again click the v2rayN icon to bring up the GUI panel.<p>
+    <img src="/img/205.png" alt="v2rayN icon in Windows system tray">
+    <p>Now the interface is in English.<p>
+    <img src="/img/206.png" alt="v2rayN GUI panel with language set to English">
+    <p>Right-click on the v2rayN icon in the system tray, and you will see that the context menu is also in English.<p>
+    <img src="/img/207.png" alt="v2rayN context menu with language set to English">
 
   </div>
 
