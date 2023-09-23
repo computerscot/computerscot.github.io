@@ -96,10 +96,10 @@
     <blockquote><code>
 systemctl restart xray && systemctl status xray</code></blockquote>
     <h2>Communicate Shadowsocks Parameters to Clients</h2>
-    <p>Supply the server IP address, port, password, and encryption method to the public. You can also supply them as a URI-style <code>ss://</code> link or as a QR code. Most SS clients can import server parameters from a URL or on-screen QR code.</p>
+    <p>Supply the server IP address, port, password, and encryption method to the public. You can also supply them as a URI-style <code>ss://</code> link or as a QR code. Most SS clients can import server parameters from a URI or on-screen QR code.</p>
     <p>The original Shadowsocks URI-style ss:// consisted of:</p>
     <blockquote><code>ss://base64-encode(method:password@hostname:port)#remark</code></blockquote>
-    <p>Shadowsocks Improvement Proposal <a href="https://shadowsocks.org/doc/sip002.html"></a> purposed a new URI scheme, following <a href="https://www.ietf.org/rfc/rfc3986.txt">RFC3986</a>, which looks like this:</p>
+    <p>Shadowsocks Improvement Proposal <a href="https://shadowsocks.org/doc/sip002.html">SIP002</a> purposed a new URI scheme, following <a href="https://www.ietf.org/rfc/rfc3986.txt">RFC3986</a>, which looks like this:</p>
     <blockquote><code>ss://websafe-base64-encode-utf8(method:password)@hostname:port#remark</code></blockquote>
     <p>Some people use the original style, some people use the new style of <code>ss://</code> URIs.</p>
 
