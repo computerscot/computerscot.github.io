@@ -21,7 +21,7 @@
   </div>
   <div class="wrapper">
     <h1>Free Public-Interest Shadowsocks Servers</h1>
-    <p><em>September 22, 2023</em></p>
+    <p><em>September 23, 2023</em></p>
     <p>Some people need a quick and free way to access a Shadowsocks server.</p>
     <p>At the same time, other people are willing to provide free Shadowsocks servers, if they are in the public interest.</p>
     <p>One thing that puts people off from providing free Shadowsocks servers is that you are effectively acting as an exit node. Whatever anyone does on your server can be blamed on you.</p>
@@ -104,7 +104,18 @@ systemctl restart xray && systemctl status xray</code></blockquote>
     <blockquote><code>ss://websafe-base64-encode-utf8(method:password)@hostname:port#remark</code></blockquote>
     <p>Some people use the original style, some people use the new style of <code>ss://</code> URIs.</p>
 
-    <h2>Install Shadowsocks for Windows Client</h2>
+    <h2>Client</h2>
+    <p>Clients are available for many platforms. Here are some examples:</p>
+    <ul>
+      <li>For Windows, <a href="https://github.com/shadowsocks/shadowsocks-windows">Shadowsocks for Windows</a> or <a href="https://github.com/2dust/v2rayn">v2rayN</a></li>
+      <li>For macOS, <a href="https://github.com/shadowsocks/ShadowsocksX-NG">ShadowsocksX-NG</a></li>
+      <li>Linux, <a href="https://github.com/v2rayA/v2rayA">v2rayA</a></li>
+      <li>For Android, v2rayNG from <a href="https://play.google.com/store/apps/details?id=com.v2ray.ang">Google Play</a> or from <a href="https://github.com/2dust/v2rayNG">GitHub</a></li>
+      <li>For iOS and iPadOS, <a href="https://apps.apple.com/us/app/shadowrocket/id932747118">Shadowrocket</a></li>
+    </ul>
+    <p>We will give detailed installation instructions for Shadowsocks for Windows and v2rayN for Windows.</p>
+
+    <h3>Install Shadowsocks for Windows Client</h3>
     <p>Open a browser and visit <a href="https://github.com/shadowsocks/shadowsocks-windows">https://github.com/shadowsocks/shadowsocks-windows</a>, the C# port of Shadowsocks.</p>
     <img src="/img/208.png" alt="GitHub repository for Shadowsocks for Windows">
     <p>Scroll down and click <strong>Releases</strong> in the sidebar.<p>
@@ -120,7 +131,7 @@ systemctl restart xray && systemctl status xray</code></blockquote>
     <p>In the extracted folder, click <code>Shadowsocks.exe</code> to launch the application.<p>
     <img src="/img/214.png" alt="Shadowsocks for Windows application exe file in extracted folder">
 
-    <h2>Install v2rayN for Windows Client</h2>
+    <h3>Install v2rayN for Windows Client</h3>
     <p>You can also connect to Shadowsocks servers from the v2rayN client.</p>
     <p>Open a browser and visit <a href="https://github.com/2dust/v2rayn">https://github.com/2dust/v2rayn</a>, a GUI client supporting Xray, V2Ray, Shadowsocks, and other protocols.</p>
     <img src="/img/183.png" alt="GitHub repository for v2rayN by 2dust">
