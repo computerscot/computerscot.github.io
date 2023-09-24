@@ -63,6 +63,18 @@
     <p>Edit the Xray configuration file <code>/usr/local/etc/xray/config.json</code>. Make it look like this. Note that Tor handles TCP only, and therefore the SS input must also be TCP only. (Firefox has a feature to send DNS queries through a SOCKS tunnel.)</p>
 <pre>
 {
+    "routing": {
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:private"
+                ],
+                "outboundTag": "block"
+            }
+        ]
+    },
     "inbounds": [
         {
             "port": &lt;PORT-NUMBER&gt;,
@@ -81,6 +93,7 @@
     "outbounds": [
         {
             "protocol": "socks",
+            "tag": "tor"
             "settings": {
                 "servers": [
                     {
@@ -89,6 +102,10 @@
                     }
                 ]
              }
+        },
+        {
+            "protocol": "blackhole",
+            "tag": "block"
         }
     ]
 }
