@@ -35,7 +35,7 @@
 +----------+        +--------+--------+
 </pre>
     <p>The free server accepts V2Ray or Xray traffic, but forces it into the Tor network. The risk is shunted to the knowledgeable and well-resourced organizations who host Tor exit nodes.</p>
-    <p>Also, since Tor will be slower than a commercial VPN, your server will not be exploited by cheap people who want a VPN but want someone else to pay for it.</p>
+    <p>Also, since Tor will be slower than a commercial VPN, your server will not be exploited by cheap people who want a VPN but want someone else to pay for it. Note also that Tor handles only TCP traffic.</p>
     <p>Here is how to set up the server. We will use Xray in our examples, but the process will be similar for V2Ray.</p>
 
     <h2>Set Up Tor Client on Server</h2>
@@ -55,7 +55,7 @@
     <h2>Set Up V2Ray or Xray Server</h2>
     <p>Install the latest version of Xray to host your V2Ray or Xray server:</p>
     <blockquote><code>bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install --beta -u root</code></blockquote>
-    <p>(If you are using V2Ray instead of Xray, use <a href="https://github.com/v2fly/v2ray-core">https://github.com/v2fly/v2ray-core</a>.)</p>
+    <p>(If you are using V2Ray instead of Xray, use <a href="https://github.com/v2fly/fhs-install-v2ray">https://github.com/v2fly/fhs-install-v2ray</a>.)</p>
     <p>Generate UUID:</p>
     <blockquote><code>xray uuid</code></blockquote>
     <p>Example:</p>
@@ -69,7 +69,7 @@ Public key: _J7qLmphZmLBayaKx0djjYt8KT0c_EfEmV2M4KAxniA</code></blockquote>
     <blockquote><code>openssl rand -hex 8</code></blockquote>
     <p>Example:</p>
     <blockquote><code>73459cc25fe18a97</code></blockquote>
-    <p>Edit the Xray configuration file <code>/usr/local/etc/xray/config.json</code>. Make it look like this. Note that Tor handles only TCP traffic.</p>
+    <p>Edit the Xray configuration file <code>/usr/local/etc/xray/config.json</code>. Make it look like this.</p>
 <pre>
 {
     "inbounds": [
