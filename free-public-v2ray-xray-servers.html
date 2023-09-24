@@ -72,6 +72,18 @@ Public key: _J7qLmphZmLBayaKx0djjYt8KT0c_EfEmV2M4KAxniA</code></blockquote>
     <p>Edit the Xray configuration file <code>/usr/local/etc/xray/config.json</code>. Make it look like this.</p>
 <pre>
 {
+    "routing": {
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:private"
+                ],
+                "outboundTag": "block"
+            }
+        ]
+    },
     "inbounds": [
         {
             "listen": "0.0.0.0",
@@ -107,6 +119,7 @@ Public key: _J7qLmphZmLBayaKx0djjYt8KT0c_EfEmV2M4KAxniA</code></blockquote>
     "outbounds": [
         {
             "protocol": "socks",
+            "tag": "tor",
             "settings": {
                 "servers": [
                     {
@@ -115,6 +128,10 @@ Public key: _J7qLmphZmLBayaKx0djjYt8KT0c_EfEmV2M4KAxniA</code></blockquote>
                     }
                 ]
              }
+        },
+        {
+            "protocol": "blackhole",
+            "tag": "block"
         }
     ]
 }
