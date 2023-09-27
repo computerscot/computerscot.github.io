@@ -111,7 +111,7 @@ https://github.com/curl/curl/wiki/DNS-over-HTTPS#publicly-available-servers</a>.
 
     <p>8. Leave the Command Prompt window open, with <code>dnstt-client.exe</code> running in it.</p>
 	
-    <p>9. Open a PowerShell window. Make SSH listen on <code>127.0.0.1:7000</code>. The <code>HostKeyAlias</code> SSH option lets you connect to your SSH server as if it were located at <code>127.0.0.1:8000</code>. Replace <code>YOUR.SERVER.IP.ADDRESS</code> with the hostname or IP address of your server.</p>
+    <p>9. Open a PowerShell window. Make SSH listen on <code>127.0.0.1:7000</code>. The <code>HostKeyAlias</code> SSH option lets you connect to your SSH server as if it were located at <code>127.0.0.1:8000</code>. Replace <code>YOUR.SERVER.IP.ADDRESS</code> with the hostname or IP address of your server. Replace <code>alice</code> by your non-root user name.</p>
     <blockquote><code>ssh -N -D 127.0.0.1:7000 -o HostKeyAlias=YOUR.SERVER.IP.ADDRESS -p 8000 alice@127.0.0.1</code></blockquote>
 
     <p>10. Leave the PowerShell window open, with SSH running in it.</p>
