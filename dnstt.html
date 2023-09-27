@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DNSTT</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="DNSTT">
+  <meta property="og:description" content="DNSTT allows you to disguise your web browsing as DNS requests on port udp/53">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://computerscot.github.io/img/computerscot.png">
+  <meta property="og:url" content="https://computerscot.github.io/dnstt.html">
+</head>
+
+<body>
+  <div id="bar">
+    <div class="wrapper">
+      <p><a href="https://computerscot.github.io">computerscot.github.io</a></p>
+    </div>
+  </div>
+  <div class="wrapper">
+    <h1>DNSTT</h1>
+    <p><em>September 27, 2023</em></p>
+
+    <h2>Overview</h2>
+	<p>DNSTT allows you to disguise your web browsing as DNS requests on port udp/53. VPS providers such as SSH Ocean and SSH Stores sometimes refer to SSH over DNS as "SlowDNS." DNSTT advertises itself as being faster than the earlier Iodine method of DNS tunneling.</p>
+	<p>The DNSTT home page is at <a href="https://www.bamsoftware.com/software/dnstt">https://www.bamsoftware.com/software/dnstt</a>.</p>
+
+    <h2>VPS</h2>
+	<p>You will need your own virtual private server. The examples are based on an Ubuntu 22.04 server with 1 GB of RAM.</p>
+
+    <h2>Domain name</h2>
+	<p>You will need your own domain name. The examples use a domain name of <code>cscot.buzz</code>.</p>
+	<p>Go to your domain name registrar's (or your DNS service's) configuration panel, and add these records:</p>
+	<ul>
+      <li>DNS record type <code>A</code> pointing from your server's hostname (e.g. <code>tns.cscot.buzz</code>) to your server's IPv4 address</li>
+      <li>Optionally, a DNS record type <code>AAAA</code> pointing from your server's hostname (e.g. <code>tns.cscot.buzz</code>) to your server's IPv6 address</li>
+      <li>DNS record type <code>NS</code> pointing from your chosen subdomain (e.g. <code>t</code>) to your server's hostname (e.g. <code>tns.cscot.buzz</code>)</li>
+	</ul>
+    <img src="img/234.png" alt="DNS records for DNSTT">
+
+    <h2>Linux server</h2>
+	<p>1. Open the server firewall. We are going to give instructions for <code>iptables</code> as the firewall and <code>iptables-persistent</code> to persist rules across reboots. We assume your server's interface is named <code>ens3</code>. Open ports <code>udp/53</code> and <code>udp/5300</code>, and redirect input on port <code>udp/53</code> to <code>udp/5300</code>, so that you can listen on a non-privileged port:</p>
+    <blockquote><code>iptables -I INPUT -p udp --dport 53 -j ACCEPT</code></blockquote>
+    <blockquote><code>iptables -I INPUT -p udp --dport 5300 -j ACCEPT</code></blockquote>
+    <blockquote><code>iptables -t nat -I PREROUTING -i ens3 -p udp --dport 53 -j REDIRECT --to-port 5300</code></blockquote>
+    <blockquote><code>ip6tables -I INPUT -p udp --dport 53 -j ACCEPT</code></blockquote>
+    <blockquote><code>ip6tables -I INPUT -p udp --dport 5300 -j ACCEPT</code></blockquote>
+    <blockquote><code>ip6tables -t nat -I PREROUTING -i ens3 -p udp --dport 53 -j REDIRECT --to-port 5300</code></blockquote>
+    <blockquote><code>iptables-save > /etc/iptables/rules.v4</code></blockquote>
+    <blockquote><code>ip6tables-save > /etc/iptables/rules.v6</code></blockquote>
+
+    <p>2. Install Go. Go to <a href="https://go.dev">https://go.dev</a>. Determine the most recent version of Go. Our examples will use <code>1.21.1</code>.</p>
+    <blockquote><code>wget https://go.dev/dl/go1.21.1.linux-amd64.tar.gz</code></blockquote>
+    <blockquote><code>tar -C /usr/local -xzf go1.21.1.linux-amd64.tar.gz</code></blockquote>
+	
+	<p>3. Add Go to your system-wide execution <code>PATH</code>:</p>
+    <blockquote><code>vi /etc/profile</code></blockquote>
+	<p>Add a line:</p>
+    <blockquote><code>export PATH=$PATH:/usr/local/go/bin</code></blockquote>
+
+    <p>4. Create a non-root user. For example:</p>
+    <blockquote><code>adduser alice</code></blockquote>
+	
+	<p>5. Exit your root SSH session.</p>
+	
+	<p>6. SSH back into your server as your non-root user (e.g. <code>alice</code>).</p>
+
+    <p>7. Build DNSTT:</p>
+    <blockquote><code>git clone https://www.bamsoftware.com/git/dnstt.git</code></blockquote>
+    <blockquote><code>cd dnstt/dnstt-server</code></blockquote>
+    <blockquote><code>go build</code></blockquote>
+	
+	<p>8. Generate public and private key pair for encryption:</p>
+    <blockquote><code>./dnstt-server -gen-key -privkey-file server.key -pubkey-file server.pub</code></blockquote>
+
+    <p>9. Run tunnel server, replacing example subdomain by your own subdomain:</p>
+    <blockquote><code>screen -S dnstt</code></blockquote>
+    <blockquote><code>./dnstt-server -udp :5300 -privkey-file server.key t.cscot.buzz 127.0.0.1:22</code></blockquote>
+	
+	<p>10. Do <strong>Ctrl</strong>+<strong>a</strong> then <strong>d</strong> to disconnect from the <code>screen</code> session.</p>
+
+
+    <h2>Windows client</h2>
+
+    <p>1. Install Go for Windows. Go to <a href="https://go.dev/dl">https://go.dev/dl</a>. Determine the most recent version of Go. Our examples will use <code>1.21.1</code>. Therefore download and run the installer <a href="https://go.dev/dl/go1.21.1.windows-amd64.msi">https://go.dev/dl/go1.21.1.windows-amd64.msi</a>.</p>
+    <img src="img/235.png" alt="Download Go for Windows">
+
+    <p>2. Download the most recent DNSTT source from <a href="https://www.bamsoftware.com/software/dnstt/dnstt-20220208.zip">https://www.bamsoftware.com/software/dnstt/dnstt-20220208.zip</a>.</p>
+    <img src="img/237.png" alt="Download DNSTT source code">
+
+    <p>3. Unzip <code>dnstt-20220208.zip</code>.</p>
+
+    <p>4. To build the tunnel client for Windows, <code>dnstt-client.exe</code>, open a Command Prompt window and execute the commands:</p>
+    <blockquote><code>cd Downloads\dnstt-20220208\dnstt-20220208\dnstt-client</code></blockquote>
+    <blockquote><code>go build</code></blockquote>
+
+    <p>5. Open PowerShell, and download the public key that you generated on the server:</p>
+    <blockquote><code>scp alice@YOUR.SERVER.IP.ADDRESS:dnstt/dnstt-server/server.pub Downloads\dnstt-20220208\dnstt-20220208\dnstt-client\server.pub</code></blockquote>
+
+    <p>6. Back in the Command Prompt window, if necessary, reposition:</p>
+    <blockquote><code>cd Downloads\dnstt-20220208\dnstt-20220208\dnstt-client</code></blockquote>
+	
+    <p>7. Run the tunnel client with the local listening port at <code>127.0.0.1:8000</code> using one of these commands, replacing the example subdomain name by your subdomain name:
+    <p>7a. If DNS-over-HTTPS is blocked in your country, you can use UDP:</p>
+    <blockquote><code>.\dnstt-client.exe -udp 1.1.1.1:53 -pubkey-file server.pub t.cscot.buzz 127.0.0.1:8000</code></blockquote>
+    <p>7b. If DNS-over-HTTPS is unblocked, you will get an additional layer of encryption by choosing a DNS-over-HTTPS resolver from <a href="https://github.com/curl/curl/wiki/DNS-over-HTTPS#publicly-available-servers">  
+https://github.com/curl/curl/wiki/DNS-over-HTTPS#publicly-available-servers</a>. We use the example of Cloudflare:</p>
+    <blockquote><code>.\dnstt-client.exe -doh https://cloudflare-dns.com/dns-query -pubkey-file server.pub t.cscot.buzz 127.0.0.1:8000</code></blockquote>
+
+    <p>8. Leave the Command Prompt window open, with <code>dnstt-client.exe</code> running in it.</p>
+	
+    <p>9. Open a PowerShell window. Make SSH listen on <code>127.0.0.1:7000</code>. The <code>HostKeyAlias</code> SSH option lets you connect to your SSH server as if it were located at <code>127.0.0.1:8000</code>. Replace <code>YOUR.SERVER.IP.ADDRESS</code> with the hostname or IP address of your server.</p>
+    <blockquote><code>ssh -N -D 127.0.0.1:7000 -o HostKeyAlias=YOUR.SERVER.IP.ADDRESS -p 8000 alice@127.0.0.1</code></blockquote>
+
+    <p>10. Leave the PowerShell window open, with SSH running in it.</p>
+
+    <p>11. Configure Firefox to use the SOCKS proxy on <code>127.0.0.1:7000</code>.</p>
+    <img src="img/237.png" alt="Configuring Firefox to use a SOCKS proxy">
+
+
+  </div>
+
+  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "94e45ea74d58413395c468ebe6bab324"}'></script><!-- End Cloudflare Web Analytics -->
+  
+</body>
+
+</html>
